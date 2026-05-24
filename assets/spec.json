@@ -1,0 +1,12 @@
+{
+  "title": "Pain Signal Profile",
+  "subtitle": "Public signals to ICP and offer (replaces $15-30K consultant)",
+  "accent_color": "#00D4FF",
+  "tagline_top": "JMC Skill Pack",
+  "demo_steps": [
+    { "duration_ms": 1200, "title": "Collect",  "body": "Jobs, funding, launches, hires" },
+    { "duration_ms": 1200, "title": "Cluster",  "body": "Five-axis pain taxonomy" },
+    { "duration_ms": 1200, "title": "Validate", "body": "Jobs-To-Be-Done framing pass" },
+    { "duration_ms": 1200, "title": "Output",   "body": "ICP brief plus offer angle" }
+  ]
+}
