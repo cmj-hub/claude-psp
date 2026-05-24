@@ -1,0 +1,49 @@
+{
+  "operator": {
+    "name": "Your Name",
+    "company": "Your Company"
+  },
+
+  "icp": {
+    "segment": "Series-B SaaS, $20-50M ARR, PLG motion, US/EU",
+    "stage": "Series B",
+    "size_range": "$20M-$50M ARR",
+    "geos": ["US", "EU"],
+    "motion": "product-led growth + assisted sales",
+    "exclusion_criteria": [
+      "Pre-PMF (<$2M ARR)",
+      "Enterprise-only ACV >$100k average",
+      "Government / regulated"
+    ]
+  },
+
+  "psp_drafts": {
+    "primary": {
+      "signal": "Posted Demand Gen Lead role ≤14 days",
+      "pain": "Pipeline gap; existing demand-gen motion isn't producing enough SQLs",
+      "timing_trigger": "new-exec",
+      "felt_pain_role": "VP Demand Gen",
+      "vocabulary": [
+        "pipeline gap",
+        "SDR ramp",
+        "we keep closing wrong-fit logos",
+        "demand-gen motion isn't producing"
+      ]
+    },
+    "secondary": null
+  },
+
+  "signal_sources": {
+    "linkedin_job_search": true,
+    "crunchbase_news": true,
+    "rss_feeds": [],
+    "podcast_feeds": [],
+    "manual_research_only": false
+  },
+
+  "research_cadence": {
+    "psp_refresh_days": 90,
+    "vocabulary_refresh_days": 30,
+    "signal_freshness_window_days": 14
+  }
+}
