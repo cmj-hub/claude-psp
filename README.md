@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/header.svg" alt="claude-psp — Pain Signal Profile Builder" width="100%">
+</p>
+
 # claude-psp
 
 > Replace a $15K-30K positioning consultant — the Pain Signal Profile
@@ -13,9 +17,12 @@ course. No LLM calls inside the skill — pure framework + deterministic
 scoring.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/cmj-hub/claude-psp?style=social)](https://github.com/cmj-hub/claude-psp)
 ![Sub-skills](https://img.shields.io/badge/Sub--skills-4-blue)
 ![Scripts](https://img.shields.io/badge/Scripts-1-green)
 ![No LLM inside](https://img.shields.io/badge/LLM--inside-no-success)
+> **Demo GIF coming soon** — install + onboarding + first run walkthrough.
+
 
 ## What it does
 
