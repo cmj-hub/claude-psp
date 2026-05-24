@@ -1,0 +1,8 @@
+{
+  "name": "psp",
+  "version": "0.1.0",
+  "description": "Pain Signal Profile builder for Claude Code. Translates public signals (job posts, funding, hires, launches) into the felt operational pain that drives B2B buying. Based on the JMC Pain Signal Profiles course.",
+  "author": "Jay Mount Consulting",
+  "license": "MIT",
+  "homepage": "https://github.com/cmj-hub/claude-psp"
+}
