@@ -30,7 +30,7 @@ scoring.
 
 ```mermaid
 graph LR
-    A[/psp] --> B{Kickoff: state check}
+    A["/psp"] --> B{Kickoff: state check}
     B -->|First time| C[Onboarding<br/>brand-config + SOUL]
     B -->|Have config| D[Construct PSP / Signal Hunt]
     C --> D

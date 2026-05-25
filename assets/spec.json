@@ -1,12 +1,24 @@
 {
   "title": "Pain Signal Profile",
-  "subtitle": "Public signals to ICP and offer (replaces $15-30K consultant)",
+  "subtitle": "Public signals → felt operational pain",
   "accent_color": "#00D4FF",
   "tagline_top": "JMC Skill Pack",
-  "demo_steps": [
-    { "duration_ms": 1200, "title": "Collect",  "body": "Jobs, funding, launches, hires" },
-    { "duration_ms": 1200, "title": "Cluster",  "body": "Five-axis pain taxonomy" },
-    { "duration_ms": 1200, "title": "Validate", "body": "Jobs-To-Be-Done framing pass" },
-    { "duration_ms": 1200, "title": "Output",   "body": "ICP brief plus offer angle" }
-  ]
+  "command": "/psp",
+  "user_prompt": "build a PSP for fintech CFOs",
+  "response_lines": [
+    "Loading signal taxonomy...",
+    "Scanning hires, funding, launches (90 days)",
+    "Extracting felt-pain language from 412 sources",
+    "Scoring vocabulary precision...",
+    "PSP ready · score 78 / 100 → push to /evp + /cold-email"
+  ],
+  "artifact": {
+    "label": "psp/fintech-cfo.md",
+    "lines": [
+      "vocab_must_use:",
+      "  - 'NDR slipping under 102'",
+      "  - 'audit-trail gaps in close cycle'",
+      "  - 'spreadsheet sprawl post-Series-B'"
+    ]
+  }
 }
