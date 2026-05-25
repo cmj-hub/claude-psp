@@ -29,7 +29,7 @@ scoring.
 ## What it does
 
 ```mermaid
-graph LR
+graph TB
     A["/psp"] --> B{Kickoff: state check}
     B -->|First time| C[Onboarding<br/>brand-config + SOUL]
     B -->|Have config| D[Construct PSP / Signal Hunt]
