@@ -1,6 +1,7 @@
 {
+  "renderer_version": 2,
   "title": "Pain Signal Profile",
-  "subtitle": "Public signals → felt operational pain",
+  "subtitle": "Public signals \u2192 felt operational pain",
   "accent_color": "#00D4FF",
   "tagline_top": "JMC Skill Pack",
   "command": "/psp",
@@ -10,7 +11,7 @@
     "Scanning hires, funding, launches (90 days)",
     "Extracting felt-pain language from 412 sources",
     "Scoring vocabulary precision...",
-    "PSP ready · score 78 / 100 → push to /evp + /cold-email"
+    "PSP ready \u00b7 score 78 / 100 \u2192 push to /evp + /cold-email"
   ],
   "artifact": {
     "label": "psp/fintech-cfo.md",
