@@ -1,0 +1,46 @@
+{
+  "name": "jmc-psp",
+  "version": "0.3.0",
+  "description": "A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP.",
+  "license": "MIT",
+  "bin": {
+    "jmc-psp": "./install.sh"
+  },
+  "scripts": {
+    "install-skills": "npx -y skills add cmj-hub/claude-psp --all -g --copy --full-depth",
+    "smoke": "bash scripts/smoke-test.sh"
+  },
+  "files": [
+    "skills",
+    "psp",
+    "scripts",
+    "examples",
+    "AGENTS.md",
+    "SOUL.md",
+    "brand-config.example.json",
+    "README.md",
+    "LICENSE",
+    "install.sh"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmj-hub/claude-psp.git"
+  },
+  "homepage": "https://jaymountconsulting.com/skills",
+  "bugs": {
+    "url": "https://github.com/cmj-hub/claude-psp/issues"
+  },
+  "keywords": [
+    "agent-skills",
+    "claude-code",
+    "cursor",
+    "codex",
+    "grok",
+    "psp",
+    "icp",
+    "b2b"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
