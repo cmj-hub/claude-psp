@@ -1,21 +1,18 @@
 <p align="center">
-  <img src="./assets/header.svg" alt="claude-psp — Pain Signal Profile for B2B operators" width="100%">
+  <img src="./assets/header.svg" alt="claude-psp — Pain Signal Profile, a five-part buying brief that replaces a static ICP" width="100%">
 </p>
 
 # claude-psp
 
-> A static ICP describes a costume. A Pain Signal Profile describes Tuesday at 11am.
+> Your ICP describes a costume. A Pain Signal Profile describes Tuesday at 11am.
 
 A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP.
 
-"Series B SaaS, fifty employees" is a state.
-A Demand Gen Lead job post, four days ago, is a signal.
+You already know the costume. Series B. VP of Marketing. Fifty employees. You can write that slide in your sleep. It does not tell you who to email on Thursday.
 
-We scored both on the sample in this repo.
-The costume got **37**.
-The signal got **100**.
+A Demand Gen Lead job post, four days ago, does. That is a thing they did. The PSP names what that post does to the person who feels the pipeline gap at 11am, and the words they use when they talk about it.
 
-The Python that did that ships with the pack. No LLM. No paid API.
+We scored both samples in this repo. The costume scored **37**. The signal scored **100**. The Python that did that is in `scripts/score_psp.py`. No LLM. No paid API.
 
 The build guide teaches the framework to a human. This pack teaches the same framework to an agent.
 
@@ -25,12 +22,16 @@ The build guide teaches the framework to a human. This pack teaches the same fra
 ![Install](https://img.shields.io/badge/install-npx%20skills-blue)
 
 <p align="center">
-  <img src="./assets/demo.gif" alt="claude-psp — terminal demo of scoring a sample PSP" width="100%">
+  <img src="./assets/demo.gif" alt="claude-psp — scoring a sample Pain Signal Profile 100 vs 37" width="100%">
 </p>
+
+## What this replaces
+
+A static ICP deck. A $15K positioning sprint's first week. The slide that says "our buyer is a VP" and then wonders why outbound is quiet.
 
 ## Install
 
-Two commands. Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, OpenCode, and the rest of the [skills CLI](https://skills.sh) list.
+Two commands. Works in Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, OpenCode, and the rest of the [skills CLI](https://skills.sh) list.
 
 ```bash
 npx skills add cmj-hub/claude-psp --all -g --full-depth
@@ -45,39 +46,34 @@ Also: `npm install github:cmj-hub/claude-psp` then `npx jmc-psp`. Or `curl -fsSL
 
 ## What you walk out with in 15 minutes
 
-Artifact: `examples/good.json` vs `examples/bad.json`.
+Artifact: `examples/good.json` versus `examples/bad.json`.
 
 ```bash
 python3 scripts/score_psp.py --file examples/good.json
 python3 scripts/score_psp.py --file examples/bad.json
 ```
 
-Score the sample. Then write yours.
-
-One loop. One ICP. Example data. That is the whole first run.
+Score the sample. Then write yours. One loop. One ICP. Example data. That is the whole first run.
 
 ## What this pack will not do
 
-It will not hunt LinkedIn for you.
-It will not pick this quarter's PSP.
-It will not ingest your CRM.
+It will not hunt LinkedIn for you. It will not pick this quarter's PSP. It will not ingest your CRM.
 
 This pack drafts and scores. It will not pick this quarter's PSP, ingest your CRM, or update when Gmail changes the spam window. That is the course + Operator Pass: the catalog that keeps moving, the tools that stay calibrated, the Friday room where you bring the artifact.
 
 ## How is a Pain Signal Profile different from an ICP?
 
-An ICP names who they are.
-A PSP names what they just did, what that does to their Tuesday, why it is acute now, who feels it, and the words they actually use.
+An ICP names who they are — stage, title, headcount. A Pain Signal Profile names what they just did, what that does to their Tuesday, why it is acute now, who feels it, and the phrases they actually use.
 
-State is not a signal. A job post four days ago is.
+State is not a signal. A job post four days ago is. If you cannot fill all five parts, you do not have a PSP yet.
 
 ## Do I need live data to start?
 
-No. The Series-B sample is in `examples/`. Score it. Then swap in your book.
+No. The Series-B sample is in `examples/`. Score it. Then swap in a signal from your book. Live hunt is not the first loop.
 
 ## Does this hunt signals for me?
 
-No. After the sample, `signal-hunt` names the *kinds* of public signals worth watching. It does not log in. Closed-loop hunt on your accounts is Operator Pass.
+No. After the sample, `signal-hunt` names the *kinds* of public signals worth watching — job posts, funding, launches, hires. It does not log in. Closed-loop hunt on your accounts is Operator Pass.
 
 ## Suite, course, Operator Pass
 
@@ -89,10 +85,10 @@ Founder: $97/mo billed annually ($1,164/yr), locked for life if bought before Oc
 
 ## Companion packs
 
-- [claude-evp](https://github.com/cmj-hub/claude-evp) — 22-word line per Schwartz tier
+- [claude-evp](https://github.com/cmj-hub/claude-evp) — 22-word Early Value Proposition per Schwartz tier
 - [claude-cold-email](https://github.com/cmj-hub/claude-cold-email) — signal, pain, EVP, binary ask
 - [claude-founder-brand](https://github.com/cmj-hub/claude-founder-brand) — Pillar / Proof / Process / Person
-- [claude-pricing](https://github.com/cmj-hub/claude-pricing) — three-tier contrast + pocket-price leaks
+- [claude-pricing](https://github.com/cmj-hub/claude-pricing) — three-tier contrast and pocket-price leaks
 
 ## License
 
