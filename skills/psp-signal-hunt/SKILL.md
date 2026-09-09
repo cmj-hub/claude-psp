@@ -2,10 +2,10 @@
 name: psp-signal-hunt
 description: Surface 5-10 public, recent, verifiable signals worth hunting for a given ICP segment. Catalogs signal types (hiring, funding, leadership, product, pivot, content) and proposes operational sources + cadence to track each. Loaded by the main psp skill when the user wants to find what signals to hunt.
 user-invocable: false
-allowed-tools:
-  - Read
-  - WebFetch
+allowed-tools: Read WebFetch
   - Grep
+license: MIT
+
 ---
 
 # PSP Signal Hunt — sub-skill
