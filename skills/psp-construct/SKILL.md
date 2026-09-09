@@ -2,11 +2,10 @@
 name: psp-construct
 description: Step-by-step construction of a Pain Signal Profile for a specific ICP segment. Walks operator through the 5 components (signal, pain, timing, role, vocabulary), validates each, and produces a structured PSP doc. Loaded by the main psp skill when the user wants to build a PSP from scratch.
 user-invocable: false
-allowed-tools:
-  - Read
-  - Write
-  - Grep
+allowed-tools: Read Write Grep
   - WebFetch
+license: MIT
+
 ---
 
 # PSP Construct — sub-skill

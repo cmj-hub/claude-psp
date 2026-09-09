@@ -11,11 +11,10 @@ description: >
   on: "build a PSP", "pain signal profile", "what's our ICP pain", "what
   signals should we hunt", "signal to pain mapping", "buyer pain", "PSP
   worksheet", "find the signal".
-allowed-tools:
-  - Read
-  - Write
-  - Grep
+allowed-tools: Read Write Grep
   - WebFetch
+license: MIT
+
 ---
 
 # PSP — Pain Signal Profile Builder
@@ -212,15 +211,7 @@ Once you have a PSP, plug it into:
 - **JMC Cold Email & Outreach Craft course** — full sequence design
 - **JMC Pain Signal Profiles course** — the deep methodology
 
-## Full course
+## Free hosted version
 
-This skill is the agent-form of the JMC **Pain Signal Profiles** course
-in The Compounding Engine. The course covers:
-
-- Signal taxonomy (8 categories, 30+ specific signal types)
-- Signal-source operations (LinkedIn, news APIs, RSS, manual research)
-- Pain-mapping rigor (avoiding generic / abstract pain claims)
-- Vocabulary mining at scale
-- PSP refresh cadence (signals decay)
-
-→ **[jaymountconsulting.com/learn/courses/pain-signal-profiles](https://jaymountconsulting.com/learn/courses/pain-signal-profiles)**
+The same job runs in a browser, no install and no key:
+[Pain Signal Profile Extractor](https://jaymountconsulting.com/tools/psp-extractor)

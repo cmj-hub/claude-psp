@@ -2,10 +2,10 @@
 name: psp-kickoff
 description: Adaptive router for the PSP skill pack. Detects state (brand-config? SOUL.md? primary PSP drafted? secondary PSPs? vocabulary refreshed?) and picks the next-best step. Loaded by the main psp skill on bare invocation. Inspired by the coldoutboundskills kickoff pattern.
 user-invocable: false
-allowed-tools:
-  - Read
-  - Grep
+allowed-tools: Read Grep
   - Bash
+license: MIT
+
 ---
 
 # PSP Kickoff — adaptive router

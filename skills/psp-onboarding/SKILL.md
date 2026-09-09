@@ -2,10 +2,10 @@
 name: psp-onboarding
 description: First-run interactive setup for the PSP skill pack. Walks the operator through brand-config.json (ICP precision, exclusion criteria, signal sources) and SOUL.md (buyer vocabulary, stories, the 11am-Tuesday moment) in ~15 minutes. Refuses to let the operator skip — generic PSP output is worse than no PSP. Loaded automatically by the main psp skill when brand-config.json or SOUL.md is missing.
 user-invocable: false
-allowed-tools:
-  - Read
-  - Write
+allowed-tools: Read Write
   - Grep
+license: MIT
+
 ---
 
 # PSP Onboarding — first-run setup
