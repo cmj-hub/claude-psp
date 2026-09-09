@@ -76,14 +76,17 @@ No. The Series-B sample is in `examples/`. Score it. Then swap in a signal from 
 
 No. After the sample, `signal-hunt` names the *kinds* of public signals worth watching — job posts, funding, launches, hires. It does not log in. Closed-loop hunt on live accounts is out of scope here.
 
-## Free tools that do this in a browser
+## Free, no signup
 
-No install, no signup, no key.
-
-- **[Pain Signal Profile Extractor](https://jaymountconsulting.com/tools/psp-extractor)** — the same job as this pack, hosted
+- **[Pain Signal Profile Extractor](https://jaymountconsulting.com/tools/psp-extractor)** — the same job as this pack, hosted. No account, no key.
 - [Pain Signal Profiles framework](https://jaymountconsulting.com/frameworks/pain-signal-profiles)
 - [Pain Signal Playbook](https://jaymountconsulting.com/pain-signal-playbook)
-- [Foundation Scorecard](https://jaymountconsulting.com/foundation-scorecard)
+
+## Free, by email
+
+[**Foundation Scorecard**](https://jaymountconsulting.com/foundation-scorecard) — 14 checkpoints on the targeting layer under your GTM, plus a 90-minute prioritization guide.
+
+That one does ask for an email, and it enrols you in a short follow-up on the same topic. Unsubscribe whenever.
 
 
 ## Companion packs
@@ -106,5 +109,6 @@ Built by [Jay Mount Consulting](https://jaymountconsulting.com).
 `assets/social-preview.png` and `assets/header.png` are generated from `assets/spec.json` by a vendored renderer — no CI, no shared workflow, no network beyond the webfonts:
 
 ```bash
-node assets/card.mjs assets/spec.json assets/
+node assets/card.mjs assets/spec.json assets/          # social-preview.png + header.png
+npm i playwright-core && node assets/demo.mjs assets/spec.json assets/demo.gif
 ```
