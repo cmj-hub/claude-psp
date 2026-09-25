@@ -84,7 +84,7 @@ No. After the sample, `signal-hunt` names the *kinds* of public signals worth wa
 
 ## Free, by email
 
-[**Foundation Scorecard**](https://jaymountconsulting.com/foundation-scorecard) — 14 checkpoints on the targeting layer under your GTM, plus a 90-minute prioritization guide.
+[**Growth Audit**](https://jaymountconsulting.com/growth-audit) — where your go-to-market stack is leaking, sent to your inbox.
 
 That one does ask for an email, and it enrols you in a short follow-up on the same topic. Unsubscribe whenever.
 
