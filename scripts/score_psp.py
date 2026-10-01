@@ -23,6 +23,60 @@ from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Optional
 
 
+MAX_INPUT_BYTES = 2_000_000
+
+
+def fail_input(message: str) -> None:
+    print(f"error: {message}", file=sys.stderr)
+    raise SystemExit(2)
+
+
+def _as_text(value: object) -> str:
+    return value if isinstance(value, str) else ""
+
+
+def read_text(path: str) -> str:
+    try:
+        with open(path, "rb") as handle:
+            raw = handle.read(MAX_INPUT_BYTES + 1)
+    except IsADirectoryError:
+        fail_input(f"not a file: {path}")
+    except FileNotFoundError:
+        fail_input(f"file not found: {path}")
+    except OSError:
+        fail_input(f"cannot read file: {path}")
+    if len(raw) > MAX_INPUT_BYTES:
+        fail_input(f"file is too large: {path}")
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raw = raw[3:]
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError:
+        fail_input(f"file is not UTF-8 text: {path}")
+
+
+def parse_json(text: str) -> dict:
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        fail_input("invalid JSON")
+    if not isinstance(data, dict):
+        fail_input("JSON must be an object")
+    return data
+
+
+def read_stdin_text() -> str:
+    raw = sys.stdin.buffer.read(MAX_INPUT_BYTES + 1)
+    if len(raw) > MAX_INPUT_BYTES:
+        fail_input("input is too large")
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raw = raw[3:]
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError:
+        fail_input("input is not UTF-8 text")
+
+
 # Abstract / generic words that downgrade specificity scores.
 ABSTRACT_WORDS = {
     "scale", "growth", "optimize", "leverage", "synergy",
@@ -244,18 +298,22 @@ def score_psp(psp: PSPInputs) -> PSPScore:
 # ----------------------------------------------------------------------------
 
 def from_dict(d: dict) -> PSPInputs:
+    if not isinstance(d, dict):
+        fail_input("JSON must be an object")
+    vocabulary = d.get("vocabulary", []) or []
+    if not isinstance(vocabulary, list):
+        vocabulary = []
     return PSPInputs(
-        signal=d.get("signal", ""),
-        pain=d.get("pain", ""),
-        timing_trigger=d.get("timing_trigger", "") or d.get("timing", ""),
-        felt_pain_role=d.get("felt_pain_role", "") or d.get("role", ""),
-        vocabulary=d.get("vocabulary", []) or [],
+        signal=_as_text(d.get("signal", "")),
+        pain=_as_text(d.get("pain", "")),
+        timing_trigger=_as_text(d.get("timing_trigger", "") or d.get("timing", "")),
+        felt_pain_role=_as_text(d.get("felt_pain_role", "") or d.get("role", "")),
+        vocabulary=[item for item in vocabulary if isinstance(item, str)],
     )
 
 
 def load_from_json_file(path: str, json_path: Optional[str]) -> PSPInputs:
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    data = parse_json(read_text(path))
     if json_path:
         for key in json_path.split("."):
             data = data.get(key, {}) if isinstance(data, dict) else {}
@@ -264,8 +322,7 @@ def load_from_json_file(path: str, json_path: Optional[str]) -> PSPInputs:
 
 def load_from_md_file(path: str) -> PSPInputs:
     """Very simple MD parser. Looks for ## headings matching the 5 components."""
-    with open(path, "r", encoding="utf-8") as f:
-        text = f.read()
+    text = read_text(path)
     blocks = re.split(r"^##\s+", text, flags=re.MULTILINE)
     out = PSPInputs()
     for block in blocks:
@@ -310,12 +367,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.stdin:
-        try:
-            data = json.load(sys.stdin)
-        except json.JSONDecodeError as err:
-            print(f"Bad JSON on stdin: {err}", file=sys.stderr)
-            return 2
-        psp = from_dict(data)
+        psp = from_dict(parse_json(read_stdin_text()))
     elif args.file:
         if args.file.endswith(".json"):
             psp = load_from_json_file(args.file, args.json_path)
