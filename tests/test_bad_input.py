@@ -25,7 +25,30 @@ def run(args, stdin=None):
 class ScorePspBadInput(unittest.TestCase):
     def test_good_example_scores(self):
         result = run(["--file", str(ROOT / "examples" / "good.json")])
-        self.assertIn(result.returncode, (0, 1))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Pain brief", result.stdout)
+        self.assertIn("pipeline gap", result.stdout.lower())
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_persona_has_no_buyer_language(self):
+        result = run(["--file", str(ROOT / "examples" / "persona.json")])
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        blob = result.stdout + result.stderr
+        self.assertIn("persona has no pain in the buyer's language", blob)
+        self.assertNotIn("Pain brief", result.stdout)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_high_score_without_buyer_phrase_is_refused(self):
+        draft = (
+            '{"signal":"Posted Senior Demand Gen Lead role on LinkedIn 4 days ago",'
+            '"pain":"The team is behind on qualified pipeline this quarter",'
+            '"timing_trigger":"new-exec",'
+            '"felt_pain_role":"VP Demand Gen",'
+            '"vocabulary":["pipeline gap","SDR ramp","wrong-fit logos","forecast slip"]}'
+        )
+        result = run(["--stdin"], stdin=draft)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("pain is not in the buyer's language", result.stdout + result.stderr)
         self.assertNotIn("Traceback", result.stderr)
 
     def test_missing_file(self):

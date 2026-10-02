@@ -52,7 +52,10 @@ Artifact: `examples/good.json` versus `examples/bad.json`.
 ```bash
 python3 scripts/score_psp.py --file examples/good.json
 python3 scripts/score_psp.py --file examples/bad.json
+python3 scripts/score_psp.py --file examples/persona.json
 ```
+
+`examples/good.json` prints a pain brief: the operational sentence, and the buyer phrase inside it. `examples/persona.json` is a persona table (title, company, cares-about, challenge). The script exits 1. The line is `persona has no pain in the buyer's language`.
 
 Score the sample. Then write yours. One loop. One ICP. Example data. That is the whole first run.
 

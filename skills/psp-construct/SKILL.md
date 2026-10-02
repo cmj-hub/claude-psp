@@ -125,6 +125,8 @@ Extract 8-12 phrases they actually use about this pain.
 - Outbound program 30-point audit — PSP is the messaging anchor
 ```
 
+The pain sentence has to contain one vocabulary phrase of theirs. Then run `python3 scripts/score_psp.py --file psp.json`. A persona row whose challenge is in your words is a refusal. The passing output is the pain brief.
+
 ### Step 8 — Stress test
 
 Ask the user: "Which of these are weakest? I can re-pull or refine
