@@ -2,7 +2,9 @@
   <img src="./assets/header.png" alt="claude-psp — Pain Signal Profile, a five-part buying brief that replaces a static ICP" width="100%">
 </p>
 
-# claude-psp
+# Ideal customer profile
+
+An ideal customer profile is who buys, drawn from a public signal and the words they use on a real day, not a costume persona.
 
 > Your ICP describes a costume. A Pain Signal Profile describes Tuesday at 11am.
 
