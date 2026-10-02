@@ -110,6 +110,17 @@ RECENCY_PATTERNS = [
 
 TIMING_TRIGGERS = ["new-exec", "budget-cycle", "obvious-failure"]
 
+# Words that do not count as a buyer's phrase on their own.
+FILLER = {
+    "they", "need", "to", "the", "a", "an", "and", "of", "for",
+    "their", "our", "your", "with", "that", "this", "from", "into",
+}
+
+PERSONA_KEYS = {
+    "persona", "cares_about", "challenge", "value_we_promise",
+    "anti_persona", "firmographics",
+}
+
 
 @dataclass
 class PSPInputs:
@@ -134,6 +145,42 @@ class PSPScore:
     max_total: int
     verdict: str
     axes: List[AxisScore]
+    pain_brief: str = ""
+    buyer_phrase: str = ""
+    refusal: str = ""
+
+
+def buyer_phrases(vocabulary: List[str]) -> List[str]:
+    """Phrases of at least two concrete words. Single words and jargon do not count."""
+    found = []
+    for phrase in vocabulary:
+        words = re.findall(r"[A-Za-z0-9][A-Za-z0-9'+-]*", phrase)
+        concrete = [
+            word for word in words
+            if word.lower() not in ABSTRACT_WORDS and word.lower() not in FILLER
+        ]
+        if len(words) >= 2 and len(concrete) >= 2:
+            found.append(phrase.strip())
+    return found
+
+
+def matched_buyer_phrase(pain: str, vocabulary: List[str]) -> str:
+    haystack = pain.lower()
+    for phrase in buyer_phrases(vocabulary):
+        if phrase.lower() in haystack:
+            return phrase
+    return ""
+
+
+def persona_costume(data: dict) -> bool:
+    keys = {str(key).lower().replace("-", "_") for key in data}
+    return bool(keys & PERSONA_KEYS)
+
+
+def persona_markdown(text: str) -> bool:
+    has_persona = re.search(r"(?m)^##\s+Personas\b", text) is not None
+    has_vocab = re.search(r"(?m)^##\s+Vocabulary\b", text) is not None
+    return has_persona and not has_vocab
 
 
 # ----------------------------------------------------------------------------
@@ -270,7 +317,7 @@ def score_vocabulary(v: List[str]) -> AxisScore:
     return AxisScore("vocabulary", max(0, score), 20, notes)
 
 
-def score_psp(psp: PSPInputs) -> PSPScore:
+def score_psp(psp: PSPInputs, *, persona: bool = False) -> PSPScore:
     axes = [
         score_signal(psp.signal),
         score_pain(psp.pain, psp.vocabulary),
@@ -290,7 +337,22 @@ def score_psp(psp: PSPInputs) -> PSPScore:
     else:
         verdict = "Too abstract / generic — re-do onboarding"
 
-    return PSPScore(total=total, max_total=max_total, verdict=verdict, axes=axes)
+    phrase = matched_buyer_phrase(psp.pain, psp.vocabulary)
+    refusal = ""
+    if persona and not phrase:
+        refusal = "persona has no pain in the buyer's language"
+    elif not phrase:
+        refusal = "pain is not in the buyer's language"
+
+    return PSPScore(
+        total=total,
+        max_total=max_total,
+        verdict=verdict,
+        axes=axes,
+        pain_brief=psp.pain.strip() if phrase else "",
+        buyer_phrase=phrase,
+        refusal=refusal,
+    )
 
 
 # ----------------------------------------------------------------------------
@@ -312,12 +374,14 @@ def from_dict(d: dict) -> PSPInputs:
     )
 
 
-def load_from_json_file(path: str, json_path: Optional[str]) -> PSPInputs:
+def load_json_leaf(path: str, json_path: Optional[str]) -> dict:
     data = parse_json(read_text(path))
     if json_path:
         for key in json_path.split("."):
             data = data.get(key, {}) if isinstance(data, dict) else {}
-    return from_dict(data)
+    if not isinstance(data, dict):
+        fail_input("JSON must be an object")
+    return data
 
 
 def load_from_md_file(path: str) -> PSPInputs:
@@ -355,6 +419,16 @@ def format_text(s: PSPScore) -> str:
         lines.append(f"  {axis.name.ljust(20)} {axis.score}/{axis.max_score}")
         for note in axis.notes:
             lines.append(f"    • {note}")
+    if s.refusal:
+        lines.extend(["", f"Refusal: {s.refusal}"])
+    elif s.pain_brief:
+        lines.extend([
+            "",
+            "## Pain brief",
+            s.pain_brief,
+            "",
+            f"Buyer phrase: {s.buyer_phrase}",
+        ])
     return "\n".join(lines)
 
 
@@ -366,23 +440,32 @@ def main() -> int:
     parser.add_argument("--format", default="text", choices=["text", "json"])
     args = parser.parse_args()
 
+    persona = False
     if args.stdin:
-        psp = from_dict(parse_json(read_stdin_text()))
+        leaf = parse_json(read_stdin_text())
+        persona = persona_costume(leaf)
+        psp = from_dict(leaf)
     elif args.file:
         if args.file.endswith(".json"):
-            psp = load_from_json_file(args.file, args.json_path)
+            leaf = load_json_leaf(args.file, args.json_path)
+            persona = persona_costume(leaf)
+            psp = from_dict(leaf)
         else:
+            text = read_text(args.file)
+            persona = persona_markdown(text)
             psp = load_from_md_file(args.file)
     else:
         print("Need --file or --stdin.", file=sys.stderr)
         return 2
 
-    result = score_psp(psp)
+    result = score_psp(psp, persona=persona)
     if args.format == "json":
         print(json.dumps(asdict(result), indent=2))
     else:
         print(format_text(result))
-    return 0 if result.total >= 70 else 1
+    if result.refusal or result.total < 70:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

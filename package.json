@@ -1,6 +1,6 @@
 {
   "name": "jmc-psp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP.",
   "license": "MIT",
   "bin": {

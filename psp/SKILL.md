@@ -47,6 +47,18 @@ the buyer **is**. A PSP describes:
 
 If you can't fill in all five, you don't have a PSP yet.
 
+## The pain brief
+
+The artifact is one pain brief: the operational sentence in the buyer's words, plus the phrase you lifted from them. A persona table — title, company size, what they care about, the value you promise — is not that brief.
+
+```bash
+python3 scripts/score_psp.py --file psp.json
+```
+
+Exit 1 means the draft is a persona with no pain in the buyer's language, or the pain never uses one of their phrases. A passing run prints the pain brief.
+
+When the hunt needs a tool, use the [prospecting and sales intelligence](https://thegtmdirectory.com/category/prospecting-sales-intelligence) category. The brief still comes from a job post, a page, or a reply you already have.
+
 ## The framework
 
 ```

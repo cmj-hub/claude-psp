@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0] — 2026-10-01
+
+### Added
+- Pain brief on a passing score: the operational sentence plus the buyer phrase it contains.
+- `examples/persona.json`, a persona table. The scorer exits 1 with `persona has no pain in the buyer's language`.
+- A draft that scores above 70 still exits 1 when the pain does not use a phrase from the vocabulary list.
+
 ## [0.3.0] — 2026-09-08
 
 Public magnet pass. Instrument stays public. First loop is 15 minutes.
