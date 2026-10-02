@@ -26,7 +26,7 @@ The build guide teaches the framework to a human. This pack teaches the same fra
 ![Install](https://img.shields.io/badge/install-npx%20skills-blue)
 
 <p align="center">
-  <img src="./assets/demo.gif" alt="claude-psp — scoring a sample Pain Signal Profile 100 vs 37" width="100%">
+  <img src="./assets/demo.gif" alt="Ideal customer profile skill — signal 100, costume 37" width="100%">
 </p>
 
 ## What this replaces
