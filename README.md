@@ -79,6 +79,12 @@ No. The Series-B sample is in `examples/`. Score it. Then swap in a signal from 
 
 No. After the sample, `signal-hunt` names the *kinds* of public signals worth watching — job posts, funding, launches, hires. It does not log in. Closed-loop hunt on live accounts is out of scope here.
 
+## On the site
+
+- [Pain Signal Profiles pack](https://jaymountconsulting.com/skills/claude-psp) — this pack's page
+- [Skill packs catalog](https://jaymountconsulting.com/skills) — install paths + every pack
+- [Course twin](https://jaymountconsulting.com/learn/courses/pain-signal-profiles) — human build guide for this pack
+
 ## Free, no signup
 
 - **[Pain Signal Profile Extractor](https://jaymountconsulting.com/tools/psp-extractor)** — the same job as this pack, hosted. No account, no key.
