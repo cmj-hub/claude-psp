@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/header.png" alt="Ideal customer profile skill for Claude Code" width="100%">
+  <img src="./assets/lockup.png" width="880" alt="Ideal customer profile skill for Claude Code. An ideal customer profile is who buys, drawn from a public signal and the words they use on a real day, not a costume persona.">
 </p>
 
 # Ideal customer profile skill for Claude Code
@@ -16,14 +16,7 @@ A Demand Gen Lead job post, four days ago, does. That is a thing they did. The P
 
 We scored both samples in this repo. The costume scored **37**. The signal scored **100**. The Python that did that is in `scripts/score_psp.py`. No LLM. No paid API.
 
-The build guide teaches the framework to a human. This pack teaches the same framework to an agent.
-
-[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/claude-code)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/cmj-hub/claude-psp?style=social)](https://github.com/cmj-hub/claude-psp)
-[![skills.sh](https://skills.sh/b/cmj-hub/claude-psp)](https://skills.sh/cmj-hub/claude-psp)
-![No paid APIs](https://img.shields.io/badge/paid%20APIs-none-success)
-![Install](https://img.shields.io/badge/install-npx%20skills-blue)
+The build guide teaches a human. The pack teaches an agent.
 
 <p align="center">
   <img src="./assets/demo.gif" alt="Ideal customer profile skill — signal 100, costume 37" width="100%">
@@ -35,18 +28,24 @@ A static ICP deck. A $15K positioning sprint's first week. The slide that says "
 
 ## Install
 
-Two commands. Works in Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, OpenCode, and the rest of the [skills CLI](https://skills.sh) list.
-
 ```bash
 npx skills add cmj-hub/claude-psp --all -g --full-depth
 ```
+
+`--all` writes this pack for every host the installer knows. One host:
+
+```bash
+npx skills add cmj-hub/claude-psp --skill '*' -g --full-depth -y -a claude-code
+```
+
+Swap `claude-code` for `cursor`, `codex`, `grok`, `github-copilot`, `windsurf`, `cline`, or `opencode`.
+
+### Claude Code only
 
 ```text
 /plugin marketplace add cmj-hub/gtm-operator-skills
 /plugin install psp
 ```
-
-Also: `npm install github:cmj-hub/claude-psp` then `npx jmc-psp`. Or `curl -fsSL https://raw.githubusercontent.com/cmj-hub/claude-psp/main/install.sh | bash`.
 
 ## What you walk out with in 15 minutes
 
@@ -100,17 +99,9 @@ That one does ask for an email, and it enrols you in a short follow-up on the sa
 [**The Friday Signal**](https://jaymountconsulting.com/newsletter/signal) — one free edition a week on building GTM systems that compound. No pitch in it.
 
 
-## Companion packs
+## Next
 
-- [claude-evp](https://github.com/cmj-hub/claude-evp) — Value proposition
-- [claude-cold-email](https://github.com/cmj-hub/claude-cold-email) — Cold email
-- [claude-founder-brand](https://github.com/cmj-hub/claude-founder-brand) — LinkedIn posts
-- [claude-pricing](https://github.com/cmj-hub/claude-pricing) — Pricing strategy
-- [claude-landing-page](https://github.com/cmj-hub/claude-landing-page) — Landing page
-- [claude-geo](https://github.com/cmj-hub/claude-geo) — Generative engine optimization
-- [claude-sales-offer](https://github.com/cmj-hub/claude-sales-offer) — Sales offer
-- [claude-prospect-list](https://github.com/cmj-hub/claude-prospect-list) — Sales prospecting
-- [claude-email-sequence](https://github.com/cmj-hub/claude-email-sequence) — Email sequence
+[Value proposition](https://github.com/cmj-hub/claude-evp)
 
 ## License
 
@@ -119,12 +110,3 @@ MIT. See [LICENSE](./LICENSE).
 ## About
 
 Built by [Jay Mount Consulting](https://jaymountconsulting.com).
-
-## Regenerating the artwork
-
-`assets/social-preview.png` and `assets/header.png` are generated from `assets/spec.json` by a vendored renderer — no CI, no shared workflow, no network beyond the webfonts:
-
-```bash
-node assets/card.mjs assets/spec.json assets/          # social-preview.png + header.png
-npm i playwright-core && node assets/demo.mjs assets/spec.json assets/demo.gif
-```
