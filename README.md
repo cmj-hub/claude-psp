@@ -28,14 +28,14 @@ A static ICP deck. A $15K positioning sprint's first week. The slide that says "
 
 ## Install
 
-```bash
-npx skills add cmj-hub/claude-psp --all -g --full-depth
+```text
+skills add cmj-hub/claude-psp --all -g --full-depth
 ```
 
 `--all` writes this pack for every host the installer knows. One host:
 
-```bash
-npx skills add cmj-hub/claude-psp --skill '*' -g --full-depth -y -a claude-code
+```text
+skills add cmj-hub/claude-psp --skill '*' -g --full-depth -y -a claude-code
 ```
 
 Swap `claude-code` for `cursor`, `codex`, `grok`, `github-copilot`, `windsurf`, `cline`, or `opencode`.
