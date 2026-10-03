@@ -2,8 +2,7 @@
 name: psp-onboarding
 description: First-run interactive setup for the PSP skill pack. Walks the operator through brand-config.json (ICP precision, exclusion criteria, signal sources) and SOUL.md (buyer vocabulary, stories, the 11am-Tuesday moment) in ~15 minutes. Refuses to let the operator skip — generic PSP output is worse than no PSP. Loaded automatically by the main psp skill when brand-config.json or SOUL.md is missing.
 user-invocable: false
-allowed-tools: Read Write
-  - Grep
+allowed-tools: Read Write Grep
 license: MIT
 
 ---
@@ -102,8 +101,8 @@ not, instruct the operator to paste content and run extraction.
 ```
 Where will you hunt these signals? (Mark all that apply.)
 
-1. LinkedIn job search (daily — manual or via Phantombuster)
-2. Crunchbase / news APIs (weekly)
+1. LinkedIn job search (daily — manual)
+2. Crunchbase / news pages (weekly)
 3. RSS feeds for specific publications
 4. Podcast feeds for relevant shows
 5. Manual research only

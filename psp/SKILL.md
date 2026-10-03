@@ -11,8 +11,7 @@ description: >
   on: "build a PSP", "pain signal profile", "what's our ICP pain", "what
   signals should we hunt", "signal to pain mapping", "buyer pain", "PSP
   worksheet", "find the signal".
-allowed-tools: Read Write Grep
-  - WebFetch
+allowed-tools: Read Write Grep WebFetch
 license: MIT
 
 ---

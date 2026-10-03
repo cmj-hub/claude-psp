@@ -2,8 +2,7 @@
 name: psp-signal-hunt
 description: Surface 5-10 public, recent, verifiable signals worth hunting for a given ICP segment. Catalogs signal types (hiring, funding, leadership, product, pivot, content) and proposes operational sources + cadence to track each. Loaded by the main psp skill when the user wants to find what signals to hunt.
 user-invocable: false
-allowed-tools: Read WebFetch
-  - Grep
+allowed-tools: Read WebFetch Grep
 license: MIT
 
 ---
@@ -65,12 +64,12 @@ Rank the 5-10 candidates by:
 | # | Signal | Where | Cadence | Pain implied | Volume |
 |---|---|---|---|---|---|
 | 1 | Demand Gen Lead role posted ≤14d | LinkedIn job search + RSS | Daily | Pipeline gap | ~15-30/mo |
-| 2 | Series B announced ≤30d | Crunchbase API + CB Insights newsletter | Weekly | 3x revenue mandate | ~5-10/mo |
+| 2 | Series B announced ≤30d | Crunchbase + CB Insights newsletter | Weekly | 3x revenue mandate | ~5-10/mo |
 | 3 | New CMO ≤60d | LinkedIn search + The Org | Weekly | 90-day GTM stack review | ~3-8/mo |
 | 4 | ... | ... | ... | ... | ... |
 
 ## Recommended hunt stack
-1. **Daily**: LinkedIn job posts (manual or via Phantombuster)
+1. **Daily**: LinkedIn job posts (manual)
 2. **Weekly**: Crunchbase + The Org
 3. **Event-driven**: Podcast RSS for relevant shows
 
