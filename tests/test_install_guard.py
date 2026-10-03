@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fallback installer refuses a symlink or a non-kebab name before deleting."""
+"""Installers point at the repo and do not download or copy into $HOME."""
 
 import os
 import shutil
@@ -10,14 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SAFE_PATH = "/usr/bin:/bin:/usr/sbin:/sbin"
-
-
-def stage(dest: Path) -> None:
-    shutil.copy2(ROOT / "install.sh", dest / "install.sh")
-    for name in ("psp", "skills", "agents"):
-        src = ROOT / name
-        if src.is_dir():
-            shutil.copytree(src, dest / name, symlinks=False)
+REPO = "https://github.com/cmj-hub/claude-psp"
 
 
 def invoke(pack: Path, home: Path):
@@ -39,59 +32,35 @@ class InstallGuard(unittest.TestCase):
             (ROOT / "install.sh").read_bytes(),
             (ROOT / "scripts" / "install.sh").read_bytes(),
         )
-        text = (ROOT / "install.sh").read_text(encoding="utf-8")
-        self.assertIn("LC_ALL=C", text)
-        self.assertIn("the pack contains a symlink", text)
+        self.assertEqual(
+            (ROOT / "install.ps1").read_bytes(),
+            (ROOT / "scripts" / "install.ps1").read_bytes(),
+        )
 
-    def test_clean_copy_lands_under_temp_home(self):
+    def test_installers_have_no_npx_or_home_copy(self):
+        forbidden = ("npx", "curl", "wget")
+        for rel in ("install.sh", "scripts/install.sh", "install.ps1", "scripts/install.ps1"):
+            text = (ROOT / rel).read_text(encoding="utf-8")
+            lower = text.lower()
+            for token in forbidden:
+                self.assertNotIn(token, lower, rel)
+            self.assertNotIn("$HOME/", text, rel)
+            self.assertNotIn("$HOME\\", text, rel)
+            self.assertNotIn("$env:USERPROFILE", text, rel)
+            self.assertIn(REPO, text)
+
+    def test_pointer_does_not_write_home(self):
         with tempfile.TemporaryDirectory() as tmp:
             pack = Path(tmp) / "pack"
             home = Path(tmp) / "home"
             pack.mkdir()
             home.mkdir()
-            stage(pack)
+            shutil.copy2(ROOT / "install.sh", pack / "install.sh")
             result = invoke(pack, home)
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertTrue((home / ".claude" / "skills" / "psp" / "SKILL.md").is_file())
-            self.assertTrue(
-                (home / ".claude" / "skills" / "psp-construct" / "SKILL.md").is_file()
-            )
-
-    def test_symlink_refuses_before_delete(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            pack = Path(tmp) / "pack"
-            home = Path(tmp) / "home"
-            pack.mkdir()
-            home.mkdir()
-            stage(pack)
-            outside = Path(tmp) / "outside"
-            outside.mkdir()
-            (pack / "skills" / "psp-evil").symlink_to(outside)
-            keep = home / ".claude" / "skills" / "psp" / "KEEP"
-            keep.parent.mkdir(parents=True)
-            keep.write_text("keep", encoding="utf-8")
-            result = invoke(pack, home)
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn("symlink", result.stderr)
-            self.assertEqual(keep.read_text(encoding="utf-8"), "keep")
-
-    def test_uppercase_refuses_before_delete(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            pack = Path(tmp) / "pack"
-            home = Path(tmp) / "home"
-            pack.mkdir()
-            home.mkdir()
-            stage(pack)
-            bad = pack / "skills" / "BadName"
-            bad.mkdir()
-            (bad / "SKILL.md").write_text("nope", encoding="utf-8")
-            keep = home / ".claude" / "skills" / "BadName" / "KEEP"
-            keep.parent.mkdir(parents=True)
-            keep.write_text("keep", encoding="utf-8")
-            result = invoke(pack, home)
-            self.assertNotEqual(result.returncode, 0, result.stderr)
-            self.assertIn("lowercase", result.stderr)
-            self.assertEqual(keep.read_text(encoding="utf-8"), "keep")
+            self.assertIn(REPO, result.stdout)
+            self.assertFalse((home / ".claude").exists())
+            self.assertEqual(list(home.iterdir()), [])
 
 
 if __name__ == "__main__":
