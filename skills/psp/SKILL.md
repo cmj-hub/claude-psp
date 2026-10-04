@@ -18,12 +18,14 @@ framework.
 
 ## Start here — every invocation
 
+> **Scoring something pasted needs no setup.** If the operator handed you a line, post, draft, or file to score, run the scorer on it first and report the result; missing config only means some checks are skipped, so say which. Offer setup afterwards as the next step. Check whether files exist with Read or Glob, not a shell command.
+
 1. Read `brand-config.json` and `SOUL.md` from the project root. Both
    are shared by every pack in the suite; this pack owns only
    `psp_drafts`, `psp`, `signal_sources`, `research_cadence`, and its
    own sections of [SOUL.md](../../SOUL.md).
 2. Either missing, or `operator`/`icp` empty → run the `setup` mode
-   first, whatever was asked. Do not draft a PSP without both files
+   first, whatever was asked (scoring a pasted PSP is the exception above). Do not draft a PSP without both files
    (see `AGENTS.md`).
 3. Route by `$ARGUMENTS`. If it names a mode, go straight to it. If it
    is empty, run `status`. Otherwise match the request to a row.
