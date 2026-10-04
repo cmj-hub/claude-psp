@@ -8,11 +8,14 @@ pain specificity, timing anchor, role precision, vocabulary specificity.
 USAGE:
     python3 score_psp.py --file path/to/psp.md
     python3 score_psp.py --file brand-config.json --json-path psp_drafts.primary
+    python3 score_psp.py --file brand-config.json --json-path psp   # published block
     python3 score_psp.py --stdin    # full PSP JSON on stdin
 
 EXIT CODES:
-    0  operational: score >= 70 and signal not older than 30 days
-    1  needs work: score < 70, or the signal is stale
+    0  operational: score >= 70, signal not older than 30 days, and the
+       pain uses a phrase from the buyer's vocabulary (prints the pain brief)
+    1  needs work: score < 70, a stale signal, a persona with no pain in the
+       buyer's language, or a pain that uses none of their phrases
     2  bad input (missing file, invalid JSON, wrong shape)
 
 NO LLM. NO network calls. Pure regex + feature engineering.
@@ -107,7 +110,8 @@ SIGNAL_ACTION_PATTERNS = [
 
 # Time-anchor language (signals recency).
 RECENCY_PATTERNS = [
-    r"\b≤\s*\d+\s*(d(ay)?s?|w(eek)?s?|months?)\b",
+    # No leading \b: a word boundary never sits between a space and "≤".
+    r"(?:≤|<=?|\bwithin)\s*\d+\s*(d(ay)?s?|w(eek)?s?|months?)\b",
     r"\bin (the )?(last|past)\s+\d+\s+(days?|weeks?|months?)\b",
     r"\b\d+\s+(days?|weeks?) ago\b",
     r"\bjust\b",
@@ -115,6 +119,18 @@ RECENCY_PATTERNS = [
 ]
 
 TIMING_TRIGGERS = ["new-exec", "budget-cycle", "obvious-failure"]
+
+# Words that do not count as a buyer's phrase on their own.
+FILLER = {
+    "they", "need", "to", "the", "a", "an", "and", "of", "for",
+    "their", "our", "your", "with", "that", "this", "from", "into",
+}
+
+# Keys of a persona table: who the buyer is, not what hurts.
+PERSONA_KEYS = {
+    "persona", "cares_about", "challenge", "value_we_promise",
+    "anti_persona", "firmographics",
+}
 
 # AGENTS.md rule 8: signals older than this stay out of active outreach.
 STALE_AFTER_DAYS = 30
@@ -166,6 +182,45 @@ class PSPScore:
     verdict: str
     axes: List[AxisScore]
     operational: bool = False
+    pain_brief: str = ""
+    buyer_phrase: str = ""
+    refusal: str = ""
+
+
+def buyer_phrases(vocabulary: List[str]) -> List[str]:
+    """Phrases of at least two concrete words. Single words and jargon do not count."""
+    found = []
+    for phrase in vocabulary:
+        words = re.findall(r"[A-Za-z0-9][A-Za-z0-9'+-]*", phrase)
+        concrete = [
+            word for word in words
+            if word.lower() not in ABSTRACT_WORDS and word.lower() not in FILLER
+        ]
+        if len(words) >= 2 and len(concrete) >= 2:
+            found.append(phrase.strip())
+    return found
+
+
+def matched_buyer_phrase(pain: str, vocabulary: List[str]) -> str:
+    """The first buyer phrase the pain sentence contains, or ""."""
+    haystack = pain.lower()
+    for phrase in buyer_phrases(vocabulary):
+        if phrase.lower() in haystack:
+            return phrase
+    return ""
+
+
+def persona_costume(data: dict) -> bool:
+    """A JSON draft shaped like a persona table (title, cares-about, challenge)."""
+    keys = {str(key).lower().replace("-", "_") for key in data}
+    return bool(keys & PERSONA_KEYS)
+
+
+def persona_markdown(text: str) -> bool:
+    """A markdown doc with a Personas section and no Vocabulary section."""
+    has_persona = re.search(r"(?m)^##\s+Personas\b", text) is not None
+    has_vocab = re.search(r"(?m)^##\s+Vocabulary\b", text) is not None
+    return has_persona and not has_vocab
 
 
 # ----------------------------------------------------------------------------
@@ -312,7 +367,7 @@ def score_vocabulary(v: List[str]) -> AxisScore:
     return AxisScore("vocabulary", max(0, score), 20, notes)
 
 
-def score_psp(psp: PSPInputs) -> PSPScore:
+def score_psp(psp: PSPInputs, *, persona: bool = False) -> PSPScore:
     axes = [
         score_signal(psp.signal),
         score_pain(psp.pain, psp.vocabulary),
@@ -339,7 +394,24 @@ def score_psp(psp: PSPInputs) -> PSPScore:
         operational = False
         verdict = f"Stale signal ({age}d) — re-hunt before outreach"
 
-    return PSPScore(total=total, max_total=max_total, verdict=verdict, axes=axes, operational=operational)
+    phrase = matched_buyer_phrase(psp.pain, psp.vocabulary)
+    refusal = ""
+    if not phrase:
+        refusal = (
+            "persona has no pain in the buyer's language" if persona
+            else "pain is not in the buyer's language"
+        )
+
+    return PSPScore(
+        total=total,
+        max_total=max_total,
+        verdict=verdict,
+        axes=axes,
+        operational=operational,
+        pain_brief=psp.pain.strip() if phrase else "",
+        buyer_phrase=phrase,
+        refusal=refusal,
+    )
 
 
 # ----------------------------------------------------------------------------
@@ -347,31 +419,46 @@ def score_psp(psp: PSPInputs) -> PSPScore:
 # ----------------------------------------------------------------------------
 
 def from_dict(d: dict) -> PSPInputs:
+    """Reads a draft (`psp_drafts.primary`) or the published `psp` block.
+
+    The published block names the pain `primary_pain` and carries a list of
+    `signal_anchors`; the first anchor is the locked primary signal.
+    """
     if not isinstance(d, dict):
         fail_input("JSON must be an object")
     vocabulary = d.get("vocabulary", []) or []
     if not isinstance(vocabulary, list):
         vocabulary = []
+    signal = _as_text(d.get("signal", ""))
+    if not signal:
+        anchors = d.get("signal_anchors", [])
+        if isinstance(anchors, list) and anchors:
+            signal = _as_text(anchors[0])
     return PSPInputs(
-        signal=_as_text(d.get("signal", "")),
-        pain=_as_text(d.get("pain", "")),
+        signal=signal,
+        pain=_as_text(d.get("pain", "") or d.get("primary_pain", "")),
         timing_trigger=_as_text(d.get("timing_trigger", "") or d.get("timing", "")),
         felt_pain_role=_as_text(d.get("felt_pain_role", "") or d.get("role", "")),
         vocabulary=[item for item in vocabulary if isinstance(item, str)],
     )
 
 
-def load_from_json_file(path: str, json_path: Optional[str]) -> PSPInputs:
+def load_json_leaf(path: str, json_path: Optional[str]) -> dict:
     data = parse_json(read_text(path))
     if json_path:
         for key in json_path.split("."):
             data = data.get(key, {}) if isinstance(data, dict) else {}
-    return from_dict(data)
+    if not isinstance(data, dict):
+        fail_input("JSON must be an object")
+    return data
 
 
-def load_from_md_file(path: str) -> PSPInputs:
+def load_from_json_file(path: str, json_path: Optional[str]) -> PSPInputs:
+    return from_dict(load_json_leaf(path, json_path))
+
+
+def parse_md(text: str) -> PSPInputs:
     """Very simple MD parser. Looks for ## headings matching the 5 components."""
-    text = read_text(path)
     blocks = re.split(r"^##\s+", text, flags=re.MULTILINE)
     out = PSPInputs()
     for block in blocks:
@@ -394,6 +481,10 @@ def load_from_md_file(path: str) -> PSPInputs:
     return out
 
 
+def load_from_md_file(path: str) -> PSPInputs:
+    return parse_md(read_text(path))
+
+
 def format_text(s: PSPScore) -> str:
     lines = [
         f"# PSP Score",
@@ -406,6 +497,16 @@ def format_text(s: PSPScore) -> str:
         lines.append(f"  {axis.name.ljust(20)} {axis.score}/{axis.max_score}")
         for note in axis.notes:
             lines.append(f"    • {note}")
+    if s.refusal:
+        lines.extend(["", f"Refusal: {s.refusal}"])
+    elif s.pain_brief and s.operational:
+        lines.extend([
+            "",
+            "## Pain brief",
+            s.pain_brief,
+            "",
+            f"Buyer phrase: {s.buyer_phrase}",
+        ])
     return "\n".join(lines)
 
 
@@ -417,23 +518,32 @@ def main() -> int:
     parser.add_argument("--format", default="text", choices=["text", "json"])
     args = parser.parse_args()
 
+    persona = False
     if args.stdin:
-        psp = from_dict(parse_json(read_stdin_text()))
+        leaf = parse_json(read_stdin_text())
+        persona = persona_costume(leaf)
+        psp = from_dict(leaf)
     elif args.file:
         if args.file.endswith(".json"):
-            psp = load_from_json_file(args.file, args.json_path)
+            leaf = load_json_leaf(args.file, args.json_path)
+            persona = persona_costume(leaf)
+            psp = from_dict(leaf)
         else:
-            psp = load_from_md_file(args.file)
+            text = read_text(args.file)
+            persona = persona_markdown(text)
+            psp = parse_md(text)
     else:
         print("Need --file or --stdin.", file=sys.stderr)
         return 2
 
-    result = score_psp(psp)
+    result = score_psp(psp, persona=persona)
     if args.format == "json":
         print(json.dumps(asdict(result), indent=2))
     else:
         print(format_text(result))
-    return 0 if result.operational else 1
+    if result.refusal or not result.operational:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

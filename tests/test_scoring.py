@@ -52,6 +52,29 @@ class ReadmeNumbers(unittest.TestCase):
         ])
         self.assertEqual(code, 0)
 
+    def test_example_config_published_block_scores(self):
+        """The `psp` block uses primary_pain and signal_anchors; it scores like the draft."""
+        _, draft = score([
+            "--file", str(ROOT / "brand-config.example.json"),
+            "--json-path", "psp_drafts.primary",
+        ])
+        code, result = score([
+            "--file", str(ROOT / "brand-config.example.json"),
+            "--json-path", "psp",
+        ])
+        self.assertEqual(result["axes"], draft["axes"])
+        self.assertGreaterEqual(result["total"], 70)
+        self.assertEqual(result["buyer_phrase"], "pipeline gap")
+        self.assertEqual(result["refusal"], "")
+        self.assertEqual(code, 0)
+
+    def test_published_block_from_stdin(self):
+        config = json.loads((ROOT / "brand-config.example.json").read_text(encoding="utf-8"))
+        code, result = score_dict(config["psp"])
+        self.assertTrue(result["operational"], result)
+        self.assertEqual(result["pain_brief"], config["psp"]["primary_pain"])
+        self.assertEqual(code, 0)
+
 
 class StaleSignals(unittest.TestCase):
     """AGENTS.md rule 8: signals >30 days old stay out of active outreach."""
@@ -125,6 +148,15 @@ VP Demand Gen
         self.assertEqual(result["total"], 100, result)
         self.assertEqual(code, 0)
 
+
+
+class RecencyWindow(unittest.TestCase):
+    def test_window_symbols_count_as_recent(self):
+        for window in ("≤14 days", "<=14 days", "within 14 days"):
+            with self.subTest(window=window):
+                draft = dict(GOOD, signal=f"Posted a Demand Gen Lead role {window}")
+                _code, result = score_dict(draft)
+                self.assertEqual(axis(result, "signal")["score"], 25, axis(result, "signal")["notes"])
 
 if __name__ == "__main__":
     unittest.main()

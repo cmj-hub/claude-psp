@@ -61,6 +61,7 @@ framework.
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file psp.md   # markdown PSP doc
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp   # published block
 ```
 
 `${CLAUDE_PLUGIN_ROOT}` is the plugin's install folder; the scorer
@@ -68,9 +69,16 @@ sits in its `scripts/`. On a host that doesn't expand the variable
 (plain-skills install), use `scripts/score_psp.py` from the pack root. The scorer is stdlib Python — no network,
 no key.
 
-Exit 0 means operational: 70+ and the signal is ≤30 days old. Exit 1
-means fix the flagged axes first. Show the operator every flag; do not
-round a 69 up.
+Exit 0 means operational: 70+, the signal is ≤30 days old, and the
+pain uses one of the buyer's vocabulary phrases. Exit 1 means fix the
+flagged axes first. Show the operator every flag; do not round a 69 up.
+
+The artifact is one pain brief: the pain sentence in the buyer's words,
+plus the phrase lifted from them. A passing run prints it under
+`## Pain brief` with `Buyer phrase:`. A persona table (title, company,
+cares-about, challenge) is refused with `persona has no pain in the
+buyer's language`; a high score whose pain uses none of their phrases is
+refused with `pain is not in the buyer's language`. Both exit 1.
 
 ## The core stance
 

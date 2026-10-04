@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0] — 2026-10-04
+
+Ports the buyer-language rule from `feat/buyer-language-pain-brief` onto current main. Supersedes PR #5.
+
+### Added
+- Pain brief: an operational run prints `## Pain brief` (the pain sentence) and `Buyer phrase:` (the vocabulary phrase it contains). `--format json` gains `pain_brief`, `buyer_phrase`, `refusal`.
+- Refusals, exit 1 whatever the total: `persona has no pain in the buyer's language` (a persona table, `examples/persona.json`) and `pain is not in the buyer's language` (the pain uses none of the vocabulary phrases). The stale-signal rule still applies.
+- `SECURITY.md`, and a Privacy and security section in the README.
+
+### Fixed
+- `--json-path psp` scores the published block. The loader reads `primary_pain` as the pain and `signal_anchors[0]` as the signal; it used to score an empty pain and signal. `psp-construct` now scores the block after publishing it.
+
 ## [0.4.0] — 2026-10-04
 
 Suite pass. PSP is step 1 of the GTM operator suite.

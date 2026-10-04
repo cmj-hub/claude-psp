@@ -32,7 +32,7 @@ The build guide teaches a human. The pack teaches an agent.
 | `psp-construct` | Builds one PSP, all five parts, then scores it. |
 | `psp-signal-hunt` | Lists 5-10 public signals worth watching for a segment, with source and cadence. |
 
-`scripts/score_psp.py` exits 0 when a PSP is operational: 70 or more, and the signal is no older than 30 days. A 95 built on a 45-day-old job post still exits 1.
+`scripts/score_psp.py` exits 0 when a PSP is operational: 70 or more, the signal is no older than 30 days, and the pain uses one of the buyer's own phrases. A 95 built on a 45-day-old job post still exits 1. So does a persona table.
 
 ## What this replaces
 
@@ -66,12 +66,16 @@ Artifact: `examples/good.json` versus `examples/bad.json`.
 ```bash
 python3 scripts/score_psp.py --file examples/good.json
 python3 scripts/score_psp.py --file examples/bad.json
+python3 scripts/score_psp.py --file examples/persona.json
 ```
+
+`examples/good.json` prints a pain brief: the pain sentence, and the buyer phrase inside it. `examples/persona.json` is a persona table. It exits 1: `persona has no pain in the buyer's language`.
 
 It also reads the markdown doc `psp-construct` writes, and the draft inside your config:
 
 ```bash
 python3 scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
+python3 scripts/score_psp.py --file brand-config.json --json-path psp
 ```
 
 Score the sample. Then write yours. One loop. One ICP. Example data. That is the whole first run.
@@ -120,6 +124,10 @@ That one does ask for an email, and it enrols you in a short follow-up on the sa
 ## Next
 
 [Value proposition](https://github.com/cmj-hub/claude-evp)
+
+## Privacy and security
+
+The scorer is stdlib Python and runs locally. No script opens a network connection. The skills may use WebFetch to read a public page, only when you ask for one. The pack writes `brand-config.json`, `SOUL.md` and `psp-<segment>.md` in your project root, and nothing else. No telemetry, no credentials, nothing sent or posted. See [SECURITY.md](SECURITY.md).
 
 ## License
 
