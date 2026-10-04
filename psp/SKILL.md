@@ -10,7 +10,7 @@ description: >
   framework; loaded by cold-email, outbound-audit, and EVP skills. Triggers
   on: "build a PSP", "pain signal profile", "what's our ICP pain", "what
   signals should we hunt", "signal to pain mapping", "buyer pain", "PSP
-  worksheet", "find the signal".
+  worksheet", "find the signal", "score my PSP", "PSP status".
 allowed-tools: Read Write Grep WebFetch
 license: MIT
 
@@ -31,7 +31,40 @@ framework.
 | `/psp` | Interactive — build a PSP from scratch with the operator |
 | `/psp construct <ICP>` | Walk through PSP construction for a specific ICP segment |
 | `/psp signal-hunt <ICP>` | Surface 5-10 public signals worth hunting for an ICP |
-| `/psp validate <PSP>` | Stress-test a draft PSP against the framework |
+| `/psp validate <PSP>` | Score a draft PSP 0-100 with `scripts/score_psp.py` |
+| `/psp status` | Show where the operator is in the PSP sequence |
+| `/psp onboarding` | Set up or refresh `brand-config.json` + `SOUL.md` |
+
+## Start here — every invocation
+
+1. Read `brand-config.json` and `SOUL.md` from the project root.
+2. Either missing → load `psp-onboarding`. Do not draft a PSP without
+   both (see `AGENTS.md`).
+3. Route:
+
+| Request | Load |
+|---|---|
+| Bare `/psp`, "where do I start", `/psp status` | `psp-kickoff` |
+| `/psp onboarding`, "set up", "refresh my config" | `psp-onboarding` |
+| `/psp construct`, "build a PSP for..." | `psp-construct` |
+| `/psp signal-hunt`, "what signals should we hunt" | `psp-signal-hunt` |
+| `/psp validate`, "score this PSP" | run the scorer (below) |
+
+### Validate
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../scripts/score_psp.py --file psp.md   # markdown PSP doc
+python3 ${CLAUDE_SKILL_DIR}/../scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
+```
+
+`${CLAUDE_SKILL_DIR}` is this skill's folder; the scorer sits in the
+pack root's `scripts/`. On a host that doesn't expand the variable,
+use the pack's install path. The scorer is stdlib Python — no network,
+no key.
+
+Exit 0 means operational: 70+ and the signal is ≤30 days old. Exit 1
+means fix the flagged axes first. Show the operator every flag; do not
+round a 69 up.
 
 ## The core stance
 
@@ -64,7 +97,7 @@ recently, and verifiably**.
 
 - Just posted a job for `<role>` on LinkedIn (≤30 days)
 - Just announced funding (Series A/B/C, ≤30 days)
-- Just shipped a feature / product / pricing change (≤45 days)
+- Just shipped a feature / product / pricing change (≤30 days)
 - Just hired / promoted a relevant exec (≤30 days)
 - Just changed website positioning or hero (≤14 days)
 - Just appeared on a relevant podcast / conference / panel
@@ -196,8 +229,13 @@ Produce a structured PSP doc:
 ...
 ```
 
+Then score it (see **Validate** above) and show the result before
+calling the PSP done.
+
 ## Sub-skills
 
+- [`skills/psp-kickoff`](../skills/psp-kickoff) — state-aware router for bare `/psp`
+- [`skills/psp-onboarding`](../skills/psp-onboarding) — first-run setup of `brand-config.json` + `SOUL.md`
 - [`skills/psp-construct`](../skills/psp-construct) — full-workflow construction
 - [`skills/psp-signal-hunt`](../skills/psp-signal-hunt) — surface signals for an ICP
 

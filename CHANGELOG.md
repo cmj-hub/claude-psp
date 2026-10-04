@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.1] — 2026-10-04
+
+### Fixed
+- The Claude Code plugin now loads the main `psp` skill. It lives in `psp/`, outside the default `skills/` scan, so `/psp` was missing and only the four sub-skills loaded. `plugin.json` now lists `"skills": ["./psp/"]`; CI checks every listed path has a `SKILL.md`.
+- `psp` routes on every call: reads `brand-config.json` + `SOUL.md`, sends missing config to `psp-onboarding`, bare `/psp` to `psp-kickoff`. `/psp validate` now runs the scorer instead of naming a step that didn't exist.
+- Freshness windows agree with AGENTS.md rule 8: no signal older than 30 days in active outreach (was 45 for product, 60 for leadership in places).
+- `psp-kickoff` read a `refreshed_at` field the example config didn't have. Added.
+
+### Added
+- `score_psp.py` flags stale signals (>30 days, in days / weeks / months). A stale signal exits 1 whatever the total; JSON output gains `operational`.
+- `score_psp.py` accepts `new exec`, `Budget_Cycle` and similar spellings of the three triggers, reads `**Trigger:** …` from the doc `psp-construct` writes, and calls out firmographic signals ("Series B", "50 employees").
+- `psp-construct` and `psp-signal-hunt` load config first, honour SOUL.md won't-chase boundaries, cite a URL and date for any pulled example, and label volume as an estimate. `psp-construct` saves and scores its output.
+- `tests/test_scoring.py` pins the README numbers (good 100, bad 37) and the rules above. CI now runs `tests/`.
+
 ## [0.3.0] — 2026-09-08
 
 Public magnet pass. Instrument stays public. First loop is 15 minutes.

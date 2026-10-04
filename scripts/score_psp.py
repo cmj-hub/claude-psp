@@ -10,6 +10,11 @@ USAGE:
     python3 score_psp.py --file brand-config.json --json-path psp_drafts.primary
     python3 score_psp.py --stdin    # full PSP JSON on stdin
 
+EXIT CODES:
+    0  operational: score >= 70 and signal not older than 30 days
+    1  needs work: score < 70, or the signal is stale
+    2  bad input (missing file, invalid JSON, wrong shape)
+
 NO LLM. NO network calls. Pure regex + feature engineering.
 """
 
@@ -85,11 +90,12 @@ ABSTRACT_WORDS = {
     "drive", "enable", "empower", "accelerate", "streamline",
 }
 
-# Demographics — NOT signals.
-DEMOGRAPHIC_INDICATORS = [
-    r"\bSeries\s+[A-Z]\b",   # state, not action
-    r"\b\d+\s+employees\b",  # state
-    r"\b(B2B|B2C|SaaS|PLG)\b only without verb",
+# Firmographics — state, NOT signals.
+FIRMOGRAPHIC_PATTERNS = [
+    r"\bSeries\s+[A-Z]\b",
+    r"\b\d+\+?\s+employees\b",
+    r"\$?\d+\s*[MK]?\s*ARR\b",
+    r"\b(B2B|B2C|SaaS|PLG)\b",
 ]
 
 # Strong-signal patterns (verbs of action).
@@ -109,6 +115,31 @@ RECENCY_PATTERNS = [
 ]
 
 TIMING_TRIGGERS = ["new-exec", "budget-cycle", "obvious-failure"]
+
+# AGENTS.md rule 8: signals older than this stay out of active outreach.
+STALE_AFTER_DAYS = 30
+
+# "4 days ago", "≤14d", "within 2 weeks", "in the last 3 months" — not "18 months of runway".
+_AGE_UNIT = r"(d|days?|w|wks?|weeks?|mos?|months?)"
+AGE_PATTERN = re.compile(
+    rf"(?:(?:≤|<=|<|within|in the (?:last|past)|last|past)\s*(\d+)\s*{_AGE_UNIT}\b"
+    rf"|(\d+)\s*{_AGE_UNIT}\s+ago\b)",
+    re.IGNORECASE,
+)
+UNIT_DAYS = {"d": 1, "w": 7, "m": 30}
+
+
+def signal_age_days(s: str) -> Optional[int]:
+    """Oldest age or window (in days) the signal text names, if any."""
+    ages = []
+    for m in AGE_PATTERN.finditer(s):
+        n, unit = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+        ages.append(int(n) * UNIT_DAYS[unit[0].lower()])
+    return max(ages) if ages else None
+
+
+def normalize_trigger(t: str) -> str:
+    return re.sub(r"[\s_]+", "-", t.strip().lower())
 
 
 @dataclass
@@ -134,6 +165,7 @@ class PSPScore:
     max_total: int
     verdict: str
     axes: List[AxisScore]
+    operational: bool = False
 
 
 # ----------------------------------------------------------------------------
@@ -156,6 +188,14 @@ def score_signal(s: str) -> AxisScore:
     if not has_recency:
         score -= 8
         notes.append("No recency anchor — add ≤14d / ≤30d / 'just' / 'recently'")
+
+    age = signal_age_days(s)
+    if age is not None and age > STALE_AFTER_DAYS:
+        score -= 5
+        notes.append(f"Signal is {age} days old — stale past {STALE_AFTER_DAYS}d, keep it out of active outreach")
+
+    if not has_action and any(re.search(p, s, re.IGNORECASE) for p in FIRMOGRAPHIC_PATTERNS):
+        notes.append("Stage / headcount / category is firmographic state, not a signal — quote what they DID")
 
     # Penalize demographics-only signals
     if not has_action and re.search(r"\b(VP|CEO|CRO|CFO|Director)\b", s):
@@ -185,6 +225,8 @@ def score_pain(p: str, vocabulary: List[str]) -> AxisScore:
         if used == 0:
             score -= 8
             notes.append("Pain doesn't use any vocabulary list phrases")
+        elif abstract_hits:
+            notes.append(f"Uses {used} vocabulary phrase(s), but abstract ones don't count as buyer voice")
         else:
             notes.append(f"Uses {used} vocabulary phrase(s) — good")
 
@@ -207,7 +249,7 @@ def score_timing(t: str) -> AxisScore:
     if not t.strip():
         return AxisScore("timing", 0, 15, ["Empty timing trigger"])
 
-    t_clean = t.lower().strip()
+    t_clean = normalize_trigger(t)
     if t_clean in TIMING_TRIGGERS:
         notes.append(f"Timing trigger valid: {t_clean}")
     elif any(trig in t_clean for trig in TIMING_TRIGGERS):
@@ -281,6 +323,7 @@ def score_psp(psp: PSPInputs) -> PSPScore:
     total = sum(a.score for a in axes)
     max_total = sum(a.max_score for a in axes)
 
+    operational = total >= 70
     if total >= 85:
         verdict = "Strong PSP — ready to operationalize"
     elif total >= 70:
@@ -290,7 +333,13 @@ def score_psp(psp: PSPInputs) -> PSPScore:
     else:
         verdict = "Too abstract / generic — re-do onboarding"
 
-    return PSPScore(total=total, max_total=max_total, verdict=verdict, axes=axes)
+    age = signal_age_days(psp.signal)
+    if age is not None and age > STALE_AFTER_DAYS and total >= 70:
+        # Rule 8 outranks the total: a stale signal is not operational.
+        operational = False
+        verdict = f"Stale signal ({age}d) — re-hunt before outreach"
+
+    return PSPScore(total=total, max_total=max_total, verdict=verdict, axes=axes, operational=operational)
 
 
 # ----------------------------------------------------------------------------
@@ -334,7 +383,9 @@ def load_from_md_file(path: str) -> PSPInputs:
         elif "pain" in head_l and not out.pain:
             out.pain = body_clean
         elif "timing" in head_l:
-            out.timing_trigger = body_clean
+            # psp-construct writes "**Trigger:** new-exec" + "**Why now:** ..."
+            m = re.search(r"trigger:?\**:?\s*(.+)", body_clean, re.IGNORECASE)
+            out.timing_trigger = m.group(1).strip() if m else body_clean
         elif "role" in head_l or "felt-pain" in head_l:
             out.felt_pain_role = body_clean
         elif "vocabulary" in head_l:
@@ -382,7 +433,7 @@ def main() -> int:
         print(json.dumps(asdict(result), indent=2))
     else:
         print(format_text(result))
-    return 0 if result.total >= 70 else 1
+    return 0 if result.operational else 1
 
 
 if __name__ == "__main__":

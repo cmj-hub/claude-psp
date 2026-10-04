@@ -22,6 +22,18 @@ The build guide teaches a human. The pack teaches an agent.
   <img src="./assets/demo.gif" alt="Ideal customer profile skill — signal 100, costume 37" width="100%">
 </p>
 
+## What's in the pack
+
+| Skill | Job |
+|---|---|
+| `psp` | Entry point. Loads your config, routes to the rest, scores drafts. `/psp` in Claude Code. |
+| `psp-kickoff` | Reads where you are and names the next step. Runs on a bare `/psp`. |
+| `psp-onboarding` | 15-minute setup: writes `brand-config.json` + `SOUL.md`. |
+| `psp-construct` | Builds one PSP, all five parts, then scores it. |
+| `psp-signal-hunt` | Lists 5-10 public signals worth watching for a segment, with source and cadence. |
+
+`scripts/score_psp.py` exits 0 when a PSP is operational: 70 or more, and the signal is no older than 30 days. A 95 built on a 45-day-old job post still exits 1.
+
 ## What this replaces
 
 A static ICP deck. A $15K positioning sprint's first week. The slide that says "our buyer is a VP" and then wonders why outbound is quiet.
@@ -54,6 +66,12 @@ Artifact: `examples/good.json` versus `examples/bad.json`.
 ```bash
 python3 scripts/score_psp.py --file examples/good.json
 python3 scripts/score_psp.py --file examples/bad.json
+```
+
+It also reads the markdown doc `psp-construct` writes, and the draft inside your config:
+
+```bash
+python3 scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
 ```
 
 Score the sample. Then write yours. One loop. One ICP. Example data. That is the whole first run.

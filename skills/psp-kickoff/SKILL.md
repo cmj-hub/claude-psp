@@ -28,9 +28,9 @@ state = {
     "has_soul":            file_exists("SOUL.md"),
     "has_primary_psp":     brand_config.psp_drafts.primary and brand_config.psp_drafts.primary.pain != "",
     "has_secondary_psp":   brand_config.psp_drafts.secondary is not None,
-    "vocabulary_ok":       len(brand_config.psp_drafts.primary.vocabulary or []) >= 4,
+    "vocabulary_ok":       len(brand_config.psp_drafts.primary.vocabulary or []) >= 4,  # 4 to operate, 8+ target
     "signals_sourced":     any value true in brand_config.signal_sources,
-    "psp_age_days":        days_since(brand_config.psp_drafts.primary.refreshed_at),
+    "psp_age_days":        days_since(brand_config.psp_drafts.primary.refreshed_at),  # missing → treat as stale
 }
 ```
 
@@ -40,8 +40,8 @@ state = {
 | `has_config AND !has_primary_psp` | `psp-construct` (build primary PSP) |
 | `has_primary_psp AND !vocabulary_ok` | "Vocabulary list <4 phrases — let's mine more. Need help?" |
 | `vocabulary_ok AND !signals_sourced` | "Pick signal sources. Run `psp signal-hunt`." |
-| `signals_sourced AND psp_age_days > 90` | "PSP last refreshed >90 days ago — re-run onboarding refresh" |
-| `signals_sourced AND psp_age_days < 90` | "PSP is fresh + operational. Want to build a secondary PSP? Or push downstream into claude-evp + claude-cold-email?" |
+| `signals_sourced AND psp_age_days > psp_refresh_days` (default 90) | "PSP last refreshed >90 days ago — re-run onboarding refresh" |
+| `signals_sourced AND psp_age_days <= psp_refresh_days` | "PSP is fresh + operational. Want to build a secondary PSP? Or push downstream into claude-evp + claude-cold-email?" |
 
 ## Welcome flow
 
