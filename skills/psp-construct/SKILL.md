@@ -19,11 +19,23 @@ The main `psp` skill routes here on:
 - "Construct a Pain Signal Profile for..."
 - "Walk me through a PSP for..."
 
+## Before you start
+
+Read `brand-config.json` and `SOUL.md` from the project root. If either
+is missing, stop and load `psp-onboarding` instead. From them, carry:
+
+- `icp` and `exclusion_criteria` — the segment is already locked
+- `SOUL.md` vocabulary — the only source of pain language
+- `SOUL.md` won't-chase boundaries — never surface those signals
+- `research_cadence.signal_freshness_window_days` — default 14, never
+  more than 30
+
 ## Workflow
 
 ### Step 1 — Lock the ICP segment
 
-Ask the user to be specific. Push back on broad ICPs.
+Start from `brand-config.icp.segment`. Ask only if the user names a
+different segment. Push back on broad ICPs.
 
 > "B2B SaaS" is too broad. Try one of these shapes:
 >
@@ -39,13 +51,15 @@ For the segment, surface 5-10 candidate signals. Patterns:
 
 - **Hiring signals**: Specific role open ≤30 days
 - **Funding signals**: Round announced ≤30 days
-- **Product signals**: New tier / launch / pricing change ≤45 days
-- **Leadership signals**: New CMO / CRO / CFO / Head-of-X ≤60 days
+- **Product signals**: New tier / launch / pricing change ≤30 days
+- **Leadership signals**: New CMO / CRO / CFO / Head-of-X ≤30 days
 - **Content signals**: Recent podcast / panel / public talk on the topic
 - **Pivot signals**: Website hero / positioning change ≤14 days
 
-If WebFetch is available, demo-pull recent LinkedIn job posts or
-recent funding news for one example company in the segment.
+If WebFetch is available, pull one public example (a careers page, a
+funding announcement) for a company in the segment. Every example
+carries its URL and date. If you can't source it, say so — never
+invent a company, a post, or a date.
 
 ### Step 3 — Map signal → pain for top 3
 
@@ -83,7 +97,10 @@ Read 5-10 sources of recipient-written content:
 - Their AMA / podcast appearances
 - Their public sales/marketing internal-system tweets
 
-Extract 8-12 phrases they actually use about this pain.
+Extract 8-12 phrases they actually use about this pain. Start from
+the `SOUL.md` vocabulary list. A new phrase needs a source the
+operator can see (quote + link or "operator heard on a call"). If a
+phrase reads like category jargon, drop it.
 
 ### Step 7 — Output
 
@@ -124,13 +141,30 @@ Extract 8-12 phrases they actually use about this pain.
 - Outbound program 30-point audit — PSP is the messaging anchor
 ```
 
-### Step 8 — Stress test
+Save it as `psp-<segment-slug>.md` in the project root (ask first if
+the file exists).
 
-Ask the user: "Which of these are weakest? I can re-pull or refine
-any block." Most common weak spots:
+### Step 8 — Score and stress test
+
+Score the saved doc:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/score_psp.py --file psp-<segment-slug>.md
+```
+
+Show the score and every flag. Exit 1 (under 70, or a signal older
+than 30 days) means the PSP is not operational yet — fix the flagged
+axes before handing off.
+
+Then ask: "Which of these are weakest? I can re-pull or refine any
+block." Most common weak spots:
 
 - **Pain too abstract**: rewrite using their vocabulary, force the
   11am-Tuesday moment
 - **Signal too stale**: shorten the recency window
 - **Vocabulary borrowed from category**: pull more sources of their
   actual writing
+
+Once the operator accepts it, offer to write it back to
+`brand-config.psp_drafts.primary` (or `secondary`) with today's date in
+`refreshed_at`.

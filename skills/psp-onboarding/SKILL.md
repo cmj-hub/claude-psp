@@ -17,7 +17,8 @@ downstream PSP 10x more useful than generic framework prose.
 Loaded automatically by the `psp` orchestrator when `brand-config.json`
 or `SOUL.md` is missing from the project root.
 
-Also user-invocable: "Set up PSP brand config", "PSP onboarding", "Configure PSP".
+Also reached through `/psp onboarding`, or by asking: "Set up PSP brand
+config", "PSP onboarding", "Configure PSP".
 
 ## Why this exists
 
@@ -76,7 +77,8 @@ Now your primary PSP. Five components:
    you don't know yet, that's step 3.
 ```
 
-Save to `brand-config.psp_drafts.primary`.
+Save to `brand-config.psp_drafts.primary`, with today's date
+(`YYYY-MM-DD`) in `refreshed_at`.
 
 ### Step 3 — Vocabulary mining
 
@@ -92,6 +94,9 @@ Point me at any of these sources for the buyer segment:
 
 I'll extract candidate phrases — you confirm which ones land.
 ```
+
+Only phrases the operator confirms go in the list. Never fill the list
+with phrases you made up; three real phrases beat eight invented ones.
 
 If WebFetch is available, the skill can pull + extract directly. If
 not, instruct the operator to paste content and run extraction.
@@ -133,7 +138,16 @@ Save to `SOUL.md`.
 
 ### Step 6 — Write the files
 
-Write `brand-config.json` + `SOUL.md` at the project root. Show preview:
+Write `brand-config.json` + `SOUL.md` at the project root. Use
+`brand-config.example.json` as the shape. If either file already has
+content, show the diff and ask before overwriting. Then score the
+primary draft:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/../../scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
+```
+
+Show preview:
 
 ```
 ✓ brand-config.json — ICP + 1 PSP draft + signal sources + cadence

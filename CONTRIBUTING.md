@@ -12,8 +12,8 @@ before you contribute.
   an issue first if it's a substantial addition.
 - **Calibration improvements** to the scoring scripts — if you can
   show a case where the script scores wrong, that's gold.
-- **Cross-runtime ports** (Cursor, Gemini CLI, Codex) — see the
-  `Cross-runtime` section of the README.
+- **Cross-runtime fixes** (Cursor, Codex, Copilot and the other hosts
+  in the README's Install section).
 - **Translation** of the framework reference docs.
 
 ## What doesn't land
@@ -48,23 +48,28 @@ python3 scripts/<script>.py --help
       directory matches `name:` in frontmatter)
 - [ ] Sub-skill descriptions include trigger phrases inline
 - [ ] If you touch a script, smoke-test it and paste output in the PR
-- [ ] If you add a new sub-skill, list it in the README catalog table
+- [ ] If you add a new sub-skill, list it in the README "What's in the
+      pack" table and the routing table in `psp/SKILL.md`
+- [ ] `python3 -m unittest discover -s tests` and
+      `bash scripts/smoke-test.sh` pass
 - [ ] CHANGELOG.md updated
 - [ ] No new dependencies (any of: pip packages, npm packages, API
       keys, paid services)
 
 ## Reporting calibration issues with scoring scripts
 
-If a script (`spam_word_lint.py` / `score_psp.py` / `score_evp.py` /
-`score_post.py`) scores something obviously wrong:
+If `scripts/score_psp.py` scores something obviously wrong:
 
 1. Paste the input that produced the wrong score
 2. State your expected score + actual score
 3. Note which axis is mis-calibrated
 
-The scripts are calibrated against ~1,000 real B2B campaigns. New
-calibration cases add to the lexicons in version-controlled JSON, not
-to the script logic — keep the deterministic path stable.
+The lexicons (`ABSTRACT_WORDS`, `SIGNAL_ACTION_PATTERNS`,
+`RECENCY_PATTERNS`, `FIRMOGRAPHIC_PATTERNS`) sit at the top of the
+script. Calibration fixes go there, with a test in `tests/` that pins
+the case — keep the deterministic path stable. `examples/good.json`
+must keep scoring 100 and `examples/bad.json` 37; the README quotes
+both numbers.
 
 ## License
 

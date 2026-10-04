@@ -19,6 +19,17 @@ The main `psp` skill routes here on:
 - "Find signals for <segment>"
 - "Signal hunt"
 
+## Before you start
+
+Read `brand-config.json` and `SOUL.md` from the project root. If either
+is missing, stop and load `psp-onboarding` instead. From them, carry:
+
+- `icp` and `exclusion_criteria` — the segment is already locked
+- `SOUL.md` vocabulary — the only source of pain language
+- `SOUL.md` won't-chase boundaries — never surface those signals
+- `research_cadence.signal_freshness_window_days` — default 14, never
+  more than 30
+
 ## Signal taxonomy
 
 The skill produces signal candidates across 6 categories:
@@ -27,8 +38,8 @@ The skill produces signal candidates across 6 categories:
 |---|---|
 | **Hiring** | Specific role open ≤30 days; team size jump; first-of-kind hire (first SDR, first VP) |
 | **Funding** | Round announced ≤30 days; secondary; bridge; ARR milestone |
-| **Leadership** | New C-level / VP ≤60 days; departure; board change |
-| **Product** | New tier / pricing change / feature launch / public roadmap ≤45 days |
+| **Leadership** | New C-level / VP ≤30 days; departure; board change |
+| **Product** | New tier / pricing change / feature launch / public roadmap ≤30 days |
 | **Pivot** | Website hero rewrite; positioning shift; rebrand; new ICP language |
 | **Content** | Podcast / panel / public talk on the relevant pain ≤30 days |
 
@@ -36,8 +47,9 @@ The skill produces signal candidates across 6 categories:
 
 ### 1. Take the ICP segment
 
-The user provides a specific ICP (e.g. "Series-B SaaS, $20-50M ARR,
-PLG motion"). If they're vague, ask for precision before continuing.
+Use `brand-config.icp.segment` unless the user names another (e.g.
+"Series-B SaaS, $20-50M ARR, PLG motion"). If they're vague, ask for
+precision before continuing.
 
 ### 2. Generate 5-10 candidate signals
 
@@ -45,7 +57,9 @@ For each candidate, output:
 
 - **Signal type** (from the 6 categories)
 - **What to look for** (specific shape — e.g. "Demand Gen Lead role posted ≤14 days")
-- **Where to find it** (LinkedIn / Crunchbase / RSS / podcast feeds / their own blog)
+- **Where to find it** — prefer sources switched on in
+  `brand-config.signal_sources` (LinkedIn / Crunchbase / RSS / podcast
+  feeds / their own blog). Public pages only; no logins, no API keys.
 - **Cadence** (daily / weekly / event-driven)
 - **Why this signal implies operational pain for this ICP**
 
@@ -56,12 +70,15 @@ Rank the 5-10 candidates by:
 - **Specificity**: how directly it implies actionable pain
 - **Effort**: how hard to operationalize the hunt
 
+Volume is an estimate. Label it `est.` and say what it rests on. Do
+not present a guess as a count.
+
 ### 4. Output
 
 ```markdown
 # Signal hunt — <ICP segment>
 
-| # | Signal | Where | Cadence | Pain implied | Volume |
+| # | Signal | Where | Cadence | Pain implied | Volume (est.) |
 |---|---|---|---|---|---|
 | 1 | Demand Gen Lead role posted ≤14d | LinkedIn job search + RSS | Daily | Pipeline gap | ~15-30/mo |
 | 2 | Series B announced ≤30d | Crunchbase + CB Insights newsletter | Weekly | 3x revenue mandate | ~5-10/mo |
@@ -76,7 +93,8 @@ Rank the 5-10 candidates by:
 ## Operational notes
 - Capture signal date so freshness is enforced
 - Tag each signal with the implied pain at capture time
-- Stale signals (>45 days for hiring, >30 days for funding) drop from outreach queue
+- Signals older than `signal_freshness_window_days` (default 14) drop
+  from the outreach queue; nothing older than 30 days stays in it
 ```
 
 ### 5. Hand off

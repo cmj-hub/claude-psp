@@ -18,6 +18,7 @@
 6. **Time-anchor every PSP.** Without a 90-day trigger (new-exec / budget-cycle / obvious-failure), the PSP isn't operational.
 7. **Felt-pain role ≠ buying authority.** Push the operator to name who FEELS the pain at 11am Tuesday.
 8. **Stale signals get flagged.** Signals >30 days old should not be in active outreach lists.
+9. **Score before you hand off.** Run `scripts/score_psp.py` on every PSP and show the operator each flag. Exit 1 (under 70, or a stale signal) means it isn't operational yet.
 
 ## What the agent NEVER does
 
