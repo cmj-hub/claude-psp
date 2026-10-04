@@ -1,9 +1,10 @@
 ---
 name: psp-onboarding
-description: First-run interactive setup for the PSP skill pack. Walks the operator through brand-config.json (ICP precision, exclusion criteria, signal sources) and SOUL.md (buyer vocabulary, stories, the 11am-Tuesday moment) in ~15 minutes. Refuses to let the operator skip — generic PSP output is worse than no PSP. Loaded automatically by the main psp skill when brand-config.json or SOUL.md is missing.
+description: "First-run setup for the PSP pack: ICP precision, exclusion criteria, a primary PSP draft and signal sources in brand-config.json, plus buyer vocabulary, stories and won't-chase boundaries in SOUL.md, in about 15 minutes. Merges into existing shared files at the field level. Refuses to let the operator skip; generic PSP output is worse than none. Use when brand-config.json or SOUL.md is missing, or the operator asks to set up or refresh PSP config."
 user-invocable: false
-allowed-tools: Read Write Grep
+allowed-tools: Read Write Grep Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
 license: MIT
+models: ""
 
 ---
 
@@ -38,8 +39,14 @@ differentiation when paired with:
 
 ### Step 0 — Detect prior state
 
-Check for existing `brand-config.json` + `SOUL.md`. If both exist, ask:
-"Refresh, or skip?" If one exists, fill the gap.
+Check for existing `brand-config.json` + `SOUL.md`. Other packs in the
+suite may have written them already. Read both, show what is filled,
+and ask only for the gaps. If both already hold this pack's fields, ask:
+"Refresh, or skip?"
+
+`operator` and `icp` are shared with every pack: fill gaps only. Skip
+Step 1 if `icp.segment` is already set, unless the operator asks to
+change it.
 
 ### Step 1 — ICP precision
 
@@ -138,14 +145,43 @@ Save to `SOUL.md`.
 
 ### Step 6 — Write the files
 
-Write `brand-config.json` + `SOUL.md` at the project root. Use
-`brand-config.example.json` as the shape. If either file already has
-content, show the diff and ask before overwriting. Then score the
-primary draft:
+Both files live at the operator's project root and are shared by
+every pack in the suite. Merge at the field level:
+
+- Read the existing file first. Add or update only the fields this
+  pack owns (`psp_drafts`, `psp`, `signal_sources`,
+  `research_cadence`); leave every other key exactly as it was. Never
+  rewrite the file from `brand-config.example.json` (it is the shape,
+  not a template to copy), never delete another pack's keys.
+- Show the diff and ask before changing a field that already has a
+  value.
+- `operator` and `icp` are shared: fill gaps only.
+- `SOUL.md`: append or update only this pack's own `## ` sections (the
+  ones in the pack's [SOUL.md](../../SOUL.md) template); never rewrite
+  another pack's section.
+
+Then score the primary draft:
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
 ```
+
+If it exits 0 and the operator locks it as the primary, publish the
+`psp` block the rest of the suite reads, with the values copied from
+`psp_drafts.primary` (do not reword them):
+
+```json
+"psp": {
+  "signal_anchors": ["<psp_drafts.primary.signal>"],
+  "primary_pain": "<psp_drafts.primary.pain>",
+  "timing_trigger": "<psp_drafts.primary.timing_trigger>",
+  "felt_pain_role": "<psp_drafts.primary.felt_pain_role>",
+  "vocabulary": ["<psp_drafts.primary.vocabulary>"]
+}
+```
+
+If it exits 1, leave `psp` unwritten (or as it was) and route to
+`psp-construct` to fix the flagged axes first.
 
 Show preview:
 
@@ -161,8 +197,9 @@ The output will now use:
 - Your vocabulary (not category jargon)
 - Your stories as calibration
 
-Next step: install `cmj-hub/claude-evp` to lock the EVP that speaks
-to this PSP. Then `cmj-hub/claude-cold-email` to ship outreach.
+Next step: `/evp:evp` to lock the line that speaks to this PSP
+(`/plugin install evp@gtm-operator-skills` if it is not installed).
+Then `/cold-email:cold-email` to ship outreach.
 ```
 
 ### Step 7 — Refresh cadence
@@ -178,8 +215,8 @@ Re-run: `/psp onboarding refresh`
 
 ## References
 
-- `../../brand-config.example.json` — full template
-- `../../SOUL.md` — voice template
+- `../../brand-config.example.json` — the shape of the shared file
+- [SOUL.md](../../SOUL.md) — voice template
 - `../../AGENTS.md` — behavior rules
 - Sister skills:
   - `psp-kickoff` — adaptive router that uses these files

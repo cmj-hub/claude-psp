@@ -28,7 +28,7 @@ The build guide teaches a human. The pack teaches an agent.
 |---|---|
 | `psp` | Entry point. Loads your config, routes to the rest, scores drafts. `/psp` in Claude Code. |
 | `psp-kickoff` | Reads where you are and names the next step. Runs on a bare `/psp`. |
-| `psp-onboarding` | 15-minute setup: writes `brand-config.json` + `SOUL.md`. |
+| `psp-onboarding` | 15-minute setup: merges your ICP, PSP draft and signal sources into `brand-config.json` + `SOUL.md`. |
 | `psp-construct` | Builds one PSP, all five parts, then scores it. |
 | `psp-signal-hunt` | Lists 5-10 public signals worth watching for a segment, with source and cadence. |
 
@@ -41,13 +41,13 @@ A static ICP deck. A $15K positioning sprint's first week. The slide that says "
 ## Install
 
 ```text
-skills add cmj-hub/claude-psp --all -g --full-depth
+npx skills add cmj-hub/claude-psp --all -g --full-depth
 ```
 
 `--all` writes this pack for every host the installer knows. One host:
 
 ```text
-skills add cmj-hub/claude-psp --skill '*' -g --full-depth -y -a claude-code
+npx skills add cmj-hub/claude-psp --skill '*' -g --full-depth -y -a claude-code
 ```
 
 Swap `claude-code` for `cursor`, `codex`, `grok`, `github-copilot`, `windsurf`, `cline`, or `opencode`.
@@ -56,7 +56,7 @@ Swap `claude-code` for `cursor`, `codex`, `grok`, `github-copilot`, `windsurf`, 
 
 ```text
 /plugin marketplace add cmj-hub/gtm-operator-skills
-/plugin install psp
+/plugin install psp@gtm-operator-skills
 ```
 
 ## What you walk out with in 15 minutes

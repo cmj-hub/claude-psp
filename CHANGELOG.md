@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.0] — 2026-10-04
+
+Suite pass. PSP is step 1 of the GTM operator suite.
+
+### Added
+- Locking a primary PSP publishes a `psp` block to `brand-config.json` (`signal_anchors`, `primary_pain`, `timing_trigger`, `felt_pain_role`, `vocabulary`) for evp, prospect-list, cold-email and the rest of the suite. `psp-construct` Step 9 and `psp-onboarding` Step 6 write it; `psp-kickoff` routes there when the draft exists but `psp` does not.
+- `brand-config.example.json` carries a `psp` block consistent with `psp_drafts.primary`; `tests/test_example_config.py` pins the match.
+- "Works with the suite" section in `psp`: what it reads, writes, and hands off to.
+
+### Changed
+- `brand-config.json` and `SOUL.md` merge at the field level. The pack reads the existing file, writes only its own keys, fills `operator` and `icp` gaps only, and asks before changing a filled field. The "overwrite" offer in onboarding is gone. AGENTS.md rules 10-11.
+- Skill descriptions say when to use each skill and what each is not for. Every SKILL.md carries `models: ""`.
+- Scorer calls use `${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py`, pre-approved in `allowed-tools`.
+- README install lines use `npx skills add` and `/plugin install psp@gtm-operator-skills`.
+- `plugin.json`: author URL, repository, keywords.
+
 ## [0.3.1] — 2026-10-04
 
 ### Fixed

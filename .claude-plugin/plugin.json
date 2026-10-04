@@ -1,14 +1,23 @@
 {
   "name": "psp",
-  "icon": ".claude-plugin/icon.png",
-  "version": "0.3.1",
-  "description": "A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP.",
-  "skills": [
-    "./psp/"
-  ],
+  "version": "0.4.0",
+  "description": "A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP. Step 1 of the GTM operator suite.",
   "author": {
-    "name": "Jay Mount Consulting"
+    "name": "Jay Mount Consulting",
+    "url": "https://jaymountconsulting.com"
   },
+  "homepage": "https://jaymountconsulting.com/skills",
+  "repository": "https://github.com/cmj-hub/claude-psp",
   "license": "MIT",
-  "homepage": "https://jaymountconsulting.com/skills"
+  "keywords": [
+    "psp",
+    "pain-signal-profile",
+    "icp",
+    "buying-signals",
+    "b2b",
+    "outbound",
+    "gtm"
+  ],
+  "icon": ".claude-plugin/icon.png",
+  "skills": ["./psp/"]
 }

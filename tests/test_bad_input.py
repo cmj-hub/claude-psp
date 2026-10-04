@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCORE = ROOT / "scripts" / "score_psp.py"
 FRONT = ROOT / "scripts" / "validate-skill-frontmatter.py"
-TOKEN = "super-secret-token"
+PROBE = "super-secret-token"
 
 
 def run(args, stdin=None):
@@ -37,11 +37,11 @@ class ScorePspBadInput(unittest.TestCase):
     def test_bad_json_hides_bytes(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "psp.json"
-            path.write_text('{"signal": "' + TOKEN + '"', encoding="utf-8")
+            path.write_text('{"signal": "' + PROBE + '"', encoding="utf-8")
             result = run(["--file", str(path)])
         self.assertEqual(result.returncode, 2)
-        self.assertNotIn(TOKEN, result.stderr)
-        self.assertNotIn(TOKEN, result.stdout)
+        self.assertNotIn(PROBE, result.stderr)
+        self.assertNotIn(PROBE, result.stdout)
 
     def test_array_rejected(self):
         result = run(["--stdin"], stdin="[]")
