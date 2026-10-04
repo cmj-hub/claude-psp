@@ -1,21 +1,16 @@
----
-name: psp-construct
-description: "Step-by-step construction of a Pain Signal Profile for one ICP segment: walks the five components (signal, pain, timing, role, vocabulary), validates each, saves a PSP doc, scores it, and on the operator's say-so locks it as the primary PSP in brand-config.json. Use when the main psp skill routes a request to build or rebuild a PSP from scratch."
-user-invocable: false
-allowed-tools: Read Write Grep WebFetch Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
-license: MIT
-models: ""
+# Construct — build one PSP
 
----
+Builds one complete PSP for one ICP segment, scores it, and publishes it when locked.
 
-# PSP Construct — sub-skill
+## Contents
 
-Loaded by `psp` when the user wants to build a complete PSP for a
-specific ICP segment.
+- Activation
+- Before you start
+- Workflow
 
 ## Activation
 
-The main `psp` skill routes here on:
+`/psp:psp construct`, or:
 - "Build a PSP for..."
 - "Construct a Pain Signal Profile for..."
 - "Walk me through a PSP for..."
@@ -23,7 +18,7 @@ The main `psp` skill routes here on:
 ## Before you start
 
 Read `brand-config.json` and `SOUL.md` from the project root. If either
-is missing, stop and load `psp-onboarding` instead. From them, carry:
+is missing, stop and run the [setup](setup.md) mode instead. From them, carry:
 
 - `icp` and `exclusion_criteria` — the segment is already locked
 - `SOUL.md` vocabulary — the only source of pain language
@@ -137,23 +132,24 @@ phrase reads like category jargon, drop it.
 5. <Signal source + cadence>
 
 ## Plugs into
-- claude-cold-email — first-line opener uses Signal verbatim
-- claude-evp — EVP must speak to Pain in their Vocabulary
+- /cold-email:cold-email — first-line opener uses Signal verbatim
+- /evp:evp — EVP must speak to Pain in their Vocabulary
 - Outbound program 30-point audit — PSP is the messaging anchor
 ```
 
-Save it as `psp-<segment-slug>.md` in the project root (ask first if
-the file exists).
+Save it as `gtm/psp.md` in the operator's project (create `gtm/` if it
+is missing; ask first if the file exists — rename the old one to keep
+it).
 
 ### Step 8 — Score and stress test
 
 Score the saved doc:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file psp-<segment-slug>.md
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file gtm/psp.md
 ```
 
-Show the score and every flag. Exit 1 (under 70, a signal older
+Show the score and every fix line (`- what is wrong → what to change`). Exit 1 (under 70, a signal older
 than 30 days, or a pain that uses none of the buyer's vocabulary
 phrases) means the PSP is not operational yet — fix the flagged axes
 before handing off. The pain sentence has to contain one of their
@@ -201,5 +197,5 @@ values; do not reword them. A `secondary` PSP never touches `psp`.
 After writing it, score the published block with `--json-path psp`
 (`python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp`);
 it must exit 0 like the draft did.
-Then point at the next step: `/evp:evp` (or
+Then end with the next step, one line: `Next: /evp:evp` (or
 `/plugin install evp@gtm-operator-skills` if evp is not installed).

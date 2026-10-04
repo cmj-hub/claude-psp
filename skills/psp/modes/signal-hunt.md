@@ -1,21 +1,17 @@
----
-name: psp-signal-hunt
-description: "Surfaces 5-10 public, recent, verifiable signals worth hunting for one ICP segment, across hiring, funding, leadership, product, pivot and content, with a source and cadence to track each. Use when the main psp skill routes a request about which signals to hunt. Not for naming this week's accounts or contacts (use prospect-list)."
-user-invocable: false
-allowed-tools: Read WebFetch Grep
-license: MIT
-models: ""
+# Signal hunt — which signals to watch
 
----
+Lists 5-10 public signals worth tracking for one ICP segment, with source and cadence.
 
-# PSP Signal Hunt — sub-skill
+## Contents
 
-Loaded by `psp` when the user wants to identify what signals to track
-for a specific ICP segment.
+- Activation
+- Before you start
+- Signal taxonomy
+- Workflow
 
 ## Activation
 
-The main `psp` skill routes here on:
+`/psp:psp signal-hunt`, or:
 - "What signals should we hunt for <ICP>"
 - "Find signals for <segment>"
 - "Signal hunt"
@@ -23,7 +19,7 @@ The main `psp` skill routes here on:
 ## Before you start
 
 Read `brand-config.json` and `SOUL.md` from the project root. If either
-is missing, stop and load `psp-onboarding` instead. From them, carry:
+is missing, stop and run the [setup](setup.md) mode instead. From them, carry:
 
 - `icp` and `exclusion_criteria` — the segment is already locked
 - `SOUL.md` vocabulary — the only source of pain language
@@ -101,9 +97,13 @@ not present a guess as a count.
 ### 5. Hand off
 
 Once signals are picked, hand to:
-- **psp-construct** → map each signal to a felt pain
+- **construct** mode ([construct.md](construct.md)) → map each signal to a felt pain
 - **prospect-list** (`/prospect-list:who-to-contact`) → who shows the signal this week
 - **cold-email** (`/cold-email:cold-email`) → first-line opener uses Signal verbatim
 
 If a companion pack is not installed, name its install line
 (`/plugin install <name>@gtm-operator-skills`); do not do its job here.
+
+End with one line: `Next: /psp:psp construct` (map the top signals to
+pain), or `Next: /prospect-list:who-to-contact` once the `psp` block is
+published.

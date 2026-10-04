@@ -1,25 +1,22 @@
----
-name: psp-onboarding
-description: "First-run setup for the PSP pack: ICP precision, exclusion criteria, a primary PSP draft and signal sources in brand-config.json, plus buyer vocabulary, stories and won't-chase boundaries in SOUL.md, in about 15 minutes. Merges into existing shared files at the field level. Refuses to let the operator skip; generic PSP output is worse than none. Use when brand-config.json or SOUL.md is missing, or the operator asks to set up or refresh PSP config."
-user-invocable: false
-allowed-tools: Read Write Grep Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
-license: MIT
-models: ""
-
----
-
-# PSP Onboarding — first-run setup
+# Setup — first-run PSP config
 
 Walks the operator through ~15 minutes of setup that makes every
 downstream PSP 10x more useful than generic framework prose.
 
+## Contents
+
+- Activation
+- Why this exists
+- Workflow
+- References
+
 ## Activation
 
-Loaded automatically by the `psp` orchestrator when `brand-config.json`
-or `SOUL.md` is missing from the project root.
+Runs first whenever `brand-config.json` or `SOUL.md` is missing from
+the project root, or `operator`/`icp` is empty.
 
-Also reached through `/psp onboarding`, or by asking: "Set up PSP brand
-config", "PSP onboarding", "Configure PSP".
+Also reached through `/psp:psp setup` (`onboarding` works too), or by
+asking: "Set up PSP brand config", "PSP onboarding", "Configure PSP".
 
 ## Why this exists
 
@@ -44,27 +41,28 @@ suite may have written them already. Read both, show what is filled,
 and ask only for the gaps. If both already hold this pack's fields, ask:
 "Refresh, or skip?"
 
-`operator` and `icp` are shared with every pack: fill gaps only. Skip
-Step 1 if `icp.segment` is already set, unless the operator asks to
-change it.
+### Step 1 — Shared basics (once for the whole suite)
 
-### Step 1 — ICP precision
+`operator` (name, company, title, calendar_url) and `icp` (segment,
+role_targets, exclusion_criteria; stage, size_range, geos optional) are
+shared by every pack. If they are filled, skip this step.
+
+If they are missing, say: "Run `/gtm:setup` once for the whole suite."
+If the gtm plugin is not installed (`/plugin install
+gtm@gtm-operator-skills`), ask only those shared questions inline, in
+one short batch, and fill gaps only. Push back on a broad segment:
 
 ```
-First, ICP. Be specific — "B2B SaaS" is too broad.
-
-Tell me in one batch:
-1. The 1-sentence segment (stage / size / motion / region)
-2. The size range ($M ARR)
-3. The motion (PLG / sales-led / hybrid)
-4. The 3-5 exclusion criteria (who you don't sell to)
-
-If your ICP is fuzzy, that's a finding — outreach against a fuzzy ICP
-will be fuzzy. We can use placeholders for now and flag them for refresh
-after 100 sends.
+"B2B SaaS" is too broad. Give me stage / size / motion / region,
+e.g. "Series-B SaaS, $20-50M ARR, PLG motion, US/EU".
 ```
 
-Save to `brand-config.icp`.
+Then ask the one PSP-specific ICP question, if `icp.motion` is empty:
+"PLG, sales-led, or hybrid?" Save it to `brand-config.icp.motion`.
+
+If the ICP is fuzzy, that's a finding — outreach against a fuzzy ICP
+will be fuzzy. Use placeholders for now and flag them for refresh after
+100 sends.
 
 ### Step 2 — Primary PSP draft
 
@@ -134,14 +132,15 @@ Tell me 3-5 stories that anchor your PSP — times you saw a signal-to-pain
 mapping work or fail.
 
 Each story: 1-2 sentences, anonymized but specific. These become
-calibration points for the construct skill.
+calibration points for the construct mode.
 
 Also:
 - Your won't-chase boundaries (topics / segments you refuse)
 - The 11am-Tuesday operational moment of your buyer (paint it specific)
 ```
 
-Save to `SOUL.md`.
+Save to `SOUL.md`. `## Who I am` and the shared voice sections come
+from `/gtm:setup`; do not ask for them again if they are filled.
 
 ### Step 6 — Write the files
 
@@ -157,7 +156,7 @@ every pack in the suite. Merge at the field level:
   value.
 - `operator` and `icp` are shared: fill gaps only.
 - `SOUL.md`: append or update only this pack's own `## ` sections (the
-  ones in the pack's [SOUL.md](../../SOUL.md) template); never rewrite
+  ones in the pack's [SOUL.md](../../../SOUL.md) template); never rewrite
   another pack's section.
 
 Then score the primary draft:
@@ -180,8 +179,8 @@ If it exits 0 and the operator locks it as the primary, publish the
 }
 ```
 
-If it exits 1, leave `psp` unwritten (or as it was) and route to
-`psp-construct` to fix the flagged axes first.
+If it exits 1, leave `psp` unwritten (or as it was) and run the
+[construct](construct.md) mode to fix the flagged lines first.
 
 Show preview:
 
@@ -197,7 +196,7 @@ The output will now use:
 - Your vocabulary (not category jargon)
 - Your stories as calibration
 
-Next step: `/evp:evp` to lock the line that speaks to this PSP
+Next: /evp:evp — lock the line that speaks to this PSP
 (`/plugin install evp@gtm-operator-skills` if it is not installed).
 Then `/cold-email:cold-email` to ship outreach.
 ```
@@ -210,15 +209,15 @@ PSPs decay. Re-run onboarding when:
 - Buyer vocabulary evolves
 - Quarterly minimum (90 days)
 
-Re-run: `/psp onboarding refresh`
+Re-run: `/psp:psp setup`
 ```
 
 ## References
 
-- `../../brand-config.example.json` — the shape of the shared file
-- [SOUL.md](../../SOUL.md) — voice template
-- `../../AGENTS.md` — behavior rules
-- Sister skills:
-  - `psp-kickoff` — adaptive router that uses these files
-  - `psp-construct` — uses brand + SOUL for actual PSP build
-  - `psp-signal-hunt` — runs against your signal sources
+- `brand-config.example.json` (pack root) — the shape of the shared file
+- [SOUL.md](../../../SOUL.md) — voice template
+- `AGENTS.md` (pack root) — behavior rules
+- Other modes:
+  - [status.md](status.md) — adaptive router that uses these files
+  - [construct.md](construct.md) — uses brand + SOUL for actual PSP build
+  - [signal-hunt.md](signal-hunt.md) — runs against your signal sources

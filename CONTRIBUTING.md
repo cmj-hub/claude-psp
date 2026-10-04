@@ -8,7 +8,7 @@ before you contribute.
 - **Bug reports** — open an issue with a reproducible case. The
   scripts in `scripts/` are deterministic, so bugs there are usually
   one-line fixes.
-- **New sub-skills** that extend the existing framework. Discuss in
+- **New modes** (`skills/psp/modes/<mode>.md`) that extend the existing framework. Discuss in
   an issue first if it's a substantial addition.
 - **Calibration improvements** to the scoring scripts — if you can
   show a case where the script scores wrong, that's gold.
@@ -46,10 +46,11 @@ python3 scripts/<script>.py --help
 
 - [ ] Skill names follow the spec (lowercase, hyphens, ≤64 chars,
       directory matches `name:` in frontmatter)
-- [ ] Sub-skill descriptions include trigger phrases inline
+- [ ] The pack keeps one SKILL.md (`skills/psp/SKILL.md`); new jobs are mode files
 - [ ] If you touch a script, smoke-test it and paste output in the PR
-- [ ] If you add a new sub-skill, list it in the README "What's in the
-      pack" table and the routing table in `psp/SKILL.md`
+- [ ] If you add a new mode, list it in the README "What's in the
+      pack" table, the routing table and `argument-hint` in
+      `skills/psp/SKILL.md`, and add a trigger eval under `evals/`
 - [ ] `python3 -m unittest discover -s tests` and
       `bash scripts/smoke-test.sh` pass
 - [ ] CHANGELOG.md updated

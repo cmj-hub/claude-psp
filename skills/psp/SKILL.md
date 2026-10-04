@@ -1,18 +1,7 @@
 ---
 name: psp
-description: >
-  Builds a Pain Signal Profile (PSP): a public, recent, verifiable signal
-  (job post, funding round, leadership change, launch, pricing change), the
-  operational pain it implies, why it is acute now, who feels it, and the
-  buyer's own words. Scores drafts 0-100 with a bundled script and publishes
-  the locked primary PSP to brand-config.json for the rest of the suite.
-  Use when the operator asks to build, score, or refresh a PSP, map signals
-  to pain, decide which signals to hunt, or check PSP status. Triggers on:
-  "build a PSP", "pain signal profile", "what signals should we hunt",
-  "signal to pain mapping", "buyer pain", "score my PSP", "PSP status".
-  Not for the value-proposition line (use evp), not for picking who to
-  contact this week (use prospect-list), not for writing the email (use
-  cold-email).
+description: "Builds and scores a Pain Signal Profile (PSP): a public, recent signal, the operational pain it implies, why it is acute now, who feels it, and the buyer's own words. Publishes the locked primary to brand-config.json for the rest of the suite. Use when the operator asks to build, score or refresh a PSP, map signals to pain, pick which signals to hunt, or check PSP status. Not for the value-proposition line (use evp), not for picking who to contact this week (use prospect-list), not for writing the email (use cold-email)."
+argument-hint: "[construct | signal-hunt | validate | status | setup]"
 allowed-tools: Read Write Grep WebFetch Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
 license: MIT
 models: ""
@@ -27,39 +16,39 @@ signal implies. It's the foundation underneath cold email, outbound
 audits, EVPs, content strategy, and sales conversations in the JMC
 framework.
 
-## Quick reference
-
-| Slash | What it does |
-|---|---|
-| `/psp` | Interactive — build a PSP from scratch with the operator |
-| `/psp construct <ICP>` | Walk through PSP construction for a specific ICP segment |
-| `/psp signal-hunt <ICP>` | Surface 5-10 public signals worth hunting for an ICP |
-| `/psp validate <PSP>` | Score a draft PSP 0-100 with `scripts/score_psp.py` |
-| `/psp status` | Show where the operator is in the PSP sequence |
-| `/psp onboarding` | Set up or refresh `brand-config.json` + `SOUL.md` |
-
 ## Start here — every invocation
 
 1. Read `brand-config.json` and `SOUL.md` from the project root. Both
    are shared by every pack in the suite; this pack owns only
    `psp_drafts`, `psp`, `signal_sources`, `research_cadence`, and its
-   own sections of [SOUL.md](../SOUL.md).
-2. Either missing → load `psp-onboarding`. Do not draft a PSP without
-   both (see `AGENTS.md`).
-3. Route:
+   own sections of [SOUL.md](../../SOUL.md).
+2. Either missing, or `operator`/`icp` empty → run the `setup` mode
+   first, whatever was asked. Do not draft a PSP without both files
+   (see `AGENTS.md`).
+3. Route by `$ARGUMENTS`. If it names a mode, go straight to it. If it
+   is empty, run `status`. Otherwise match the request to a row.
+4. Read the mode file with the Read tool and follow it.
 
-| Request | Load |
+| You say / argument | Mode file |
 |---|---|
-| Bare `/psp`, "where do I start", `/psp status` | `psp-kickoff` |
-| `/psp onboarding`, "set up", "refresh my config" | `psp-onboarding` |
-| `/psp construct`, "build a PSP for..." | `psp-construct` |
-| `/psp signal-hunt`, "what signals should we hunt" | `psp-signal-hunt` |
-| `/psp validate`, "score this PSP" | run the scorer (below) |
+| (nothing), `status`, "where do I start", "PSP status" | [modes/status.md](modes/status.md) |
+| `setup`, `onboarding`, "set up", "refresh my config" | [modes/setup.md](modes/setup.md) |
+| `construct`, "build a PSP for…" | [modes/construct.md](modes/construct.md) |
+| `signal-hunt`, "what signals should we hunt" | [modes/signal-hunt.md](modes/signal-hunt.md) |
+| `validate`, "score this PSP" | no file: run the scorer (below) |
+
+Moved in 0.6: the old sub-skills (`psp-kickoff`, `psp-onboarding`,
+`psp-construct`, `psp-signal-hunt`) are these modes. Type
+`/psp:psp <mode>`.
+
+Files this pack writes in the operator's project: `brand-config.json`
+and `SOUL.md` at the root (shared), and the PSP doc at `gtm/psp.md`.
+Create `gtm/` if it is missing.
 
 ### Validate
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file psp.md   # markdown PSP doc
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file gtm/psp.md   # markdown PSP doc
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp   # published block
 ```
@@ -67,11 +56,12 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --js
 `${CLAUDE_PLUGIN_ROOT}` is the plugin's install folder; the scorer
 sits in its `scripts/`. On a host that doesn't expand the variable
 (plain-skills install), use `scripts/score_psp.py` from the pack root. The scorer is stdlib Python — no network,
-no key.
+no key. Add `--json` for one JSON object.
 
 Exit 0 means operational: 70+, the signal is ≤30 days old, and the
 pain uses one of the buyer's vocabulary phrases. Exit 1 means fix the
-flagged axes first. Show the operator every flag; do not round a 69 up.
+flagged axes first: every reason prints as `- what is wrong → what to
+change`. Show the operator every line; do not round a 69 up.
 
 The artifact is one pain brief: the pain sentence in the buyer's words,
 plus the phrase lifted from them. A passing run prints it under
@@ -178,88 +168,22 @@ words.
 The fastest way to find the vocabulary: read their job posts, their
 LinkedIn comments, their team's public AMA responses.
 
-## Workflow
 
-### 1. Pick the ICP segment
+## Finish every run with the next step
 
-Ask: "Which segment are we building a PSP for? Be specific —
-'B2B SaaS' is too broad. 'Series-B SaaS companies $20-50M ARR with a
-PLG motion' is workable."
-
-### 2. Run the signal hunt
-
-For the ICP segment, surface 5-10 public signal candidates. Use the
-`psp-signal-hunt` sub-skill if available, or walk through manually
-using the patterns above.
-
-### 3. Map signal → pain for the top 3 signals
-
-For each of the top 3 signals, ask: "If this happened, what is the
-operator at that company feeling at 11am on Tuesday?"
-
-Don't accept abstract pain ("they need better demand gen"). Force a
-specific operational moment.
-
-### 4. Anchor timing
-
-For each pain, identify which 90-day trigger makes it acute right now.
-
-### 5. Identify the felt-pain role
-
-For each pain, who in the org **feels** it? Often it's a layer below
-the buying authority.
-
-### 6. Capture vocabulary
-
-Read 5-10 sources of recipient-written content (job posts, LinkedIn
-comments, their team's tweets, conference talks). Extract 8-12 phrases
-they actually use about this pain.
-
-### 7. Output
-
-Produce a structured PSP doc:
-
-```markdown
-# PSP — <ICP segment name>
-
-## Signal
-<Top public signal worth hunting>
-
-## Pain
-<What that signal implies operationally — in their language>
-
-## Timing
-<Which 90-day trigger makes it acute>
-
-## Role (felt-pain holder)
-<The person who feels the pain at 11am Tuesday>
-
-## Vocabulary
-<8-12 phrases they use about this in private>
-
-## Top 5 signals worth hunting (for the operations team to track)
-1. <Signal>
-2. <Signal>
-...
-```
-
-Then score it (see **Validate** above) and show the result before
-calling the PSP done.
-
-## Sub-skills
-
-- [`psp-kickoff`](../skills/psp-kickoff/SKILL.md) — state-aware router for bare `/psp`
-- [`psp-onboarding`](../skills/psp-onboarding/SKILL.md) — first-run setup of `brand-config.json` + `SOUL.md`
-- [`psp-construct`](../skills/psp-construct/SKILL.md) — full-workflow construction
-- [`psp-signal-hunt`](../skills/psp-signal-hunt/SKILL.md) — surface signals for an ICP
+When a mode ends well (a PSP scores exit 0, or the `psp` block is
+published), say the next step in one line: `Next: /evp:evp` to write
+the line for this pain. If evp is not installed:
+`/plugin install evp@gtm-operator-skills`. On exit 1, the next step is
+the fix lines, then score again.
 
 ## Works with the suite
 
 This is step 1 of the GTM operator suite (`/plugin marketplace add cmj-hub/gtm-operator-skills`).
 
-- **Reads:** `operator` and `icp` from `brand-config.json` if present.
+- **Reads:** `operator` and `icp` from `brand-config.json` if present (`/gtm:setup` fills them once for the suite).
 - **Writes:** `psp_drafts`, `signal_sources`, `research_cadence`, and, once the operator locks a primary PSP, the `psp` block (`signal_anchors`, `primary_pain`, `timing_trigger`, `felt_pain_role`, `vocabulary`). Merge at the field level; never overwrite another pack's keys.
-- **Before this:** nothing. `operator` and `icp` are filled here if no other pack has set them.
+- **Before this:** `/gtm:setup` once, when `operator` or `icp` is empty. Otherwise nothing.
 - **After this:** evp (`/evp:evp`) to write the line for this pain; prospect-list (`/prospect-list:who-to-contact`) to find who shows the signal this week; pricing (`/pricing:pricing`) when price is the open question.
 
 If a companion pack is not installed, name it and its install line (`/plugin install <name>@gtm-operator-skills`); do not do its job inline.

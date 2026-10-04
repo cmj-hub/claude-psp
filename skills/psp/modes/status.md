@@ -1,14 +1,4 @@
----
-name: psp-kickoff
-description: "Adaptive router for the PSP pack. Detects state (brand-config, SOUL.md, primary PSP drafted and published, secondary PSPs, vocabulary freshness) and names the next step. Use when the operator runs a bare /psp, asks where to start, or asks for PSP status."
-user-invocable: false
-allowed-tools: Read Grep
-license: MIT
-models: ""
-
----
-
-# PSP Kickoff — adaptive router
+# Status — where you are and what's next
 
 State-aware router for PSP work. Operators don't ship outreach on
 day 1 — they walk a sequence: ICP precision → primary PSP → vocabulary
@@ -16,7 +6,7 @@ mining → secondary PSPs → operationalize signal hunting → refresh.
 
 ## Activation
 
-Loaded by `psp` on bare invocation, or:
+Runs on a bare `/psp:psp` or `/psp:psp status`, or:
 - "Where do I start with PSPs"
 - "What's next for my PSP work"
 - "I'm new to PSPs"
@@ -38,18 +28,18 @@ state = {
 
 | State | Route to |
 |---|---|
-| `!has_brand_config OR !has_soul` | `psp-onboarding` |
-| `has_config AND !has_primary_psp` | `psp-construct` (build primary PSP) |
-| `has_primary_psp AND !psp_published` | Score `psp_drafts.primary`; on exit 0 and a yes, publish the `psp` block (`psp-construct` Step 9). Downstream packs read `psp`, not the draft. |
+| `!has_brand_config OR !has_soul` OR no `operator`/`icp` | [setup](setup.md) mode |
+| `has_config AND !has_primary_psp` | [construct](construct.md) mode (build primary PSP) |
+| `has_primary_psp AND !psp_published` | Score `psp_drafts.primary`; on exit 0 and a yes, publish the `psp` block ([construct](construct.md) Step 9). Downstream packs read `psp`, not the draft. |
 | `has_primary_psp AND !vocabulary_ok` | "Vocabulary list <4 phrases — let's mine more. Need help?" |
-| `vocabulary_ok AND !signals_sourced` | "Pick signal sources. Run `psp signal-hunt`." |
-| `signals_sourced AND psp_age_days > psp_refresh_days` (default 90) | "PSP last refreshed >90 days ago — re-run onboarding refresh" |
+| `vocabulary_ok AND !signals_sourced` | "Pick signal sources. Run `/psp:psp signal-hunt`." |
+| `signals_sourced AND psp_age_days > psp_refresh_days` (default 90) | "PSP last refreshed >90 days ago — re-run `/psp:psp setup`" |
 | `signals_sourced AND psp_age_days <= psp_refresh_days` | "PSP is fresh + operational. Want to build a secondary PSP? Or push downstream into `/evp:evp` + `/cold-email:cold-email`?" |
 
 ## Welcome flow
 
 ```
-> /psp
+> /psp:psp
 
 Welcome. Let's figure out where you are.
 
@@ -62,14 +52,14 @@ You're at step 1 of 6:
 3. ⬜ Pick signal sources + cadence
 4. ⬜ Run first signal hunt → 5-10 candidates
 5. ⬜ Build secondary PSP for the next-priority segment
-6. ⬜ Plug into claude-evp + claude-cold-email downstream
+6. ⬜ Plug into /evp:evp + /cold-email:cold-email downstream
 
 Step 1 takes ~15 minutes. Ready? (y/n)
 ```
 
 ## Status check mode
 
-`/psp status`:
+`/psp:psp status`:
 
 ```
 # PSP program status
@@ -85,10 +75,16 @@ Secondary PSP:       ⬜ Not yet built
 Recommended next step:
 → Build secondary PSP for your next-priority segment, OR
 → Push primary PSP into /evp:evp (lock the EVP) + /cold-email:cold-email (ship outreach)
+
+Next: /evp:evp
 ```
 
-## References
+End the status with one `Next:` line: the first unmet row above, or
+`/evp:evp` once the `psp` block is published. `/gtm:next` (hub plugin)
+names the next pack across the whole suite.
 
-- `../psp-onboarding/SKILL.md`
-- `../psp-construct/SKILL.md`
-- `../psp-signal-hunt/SKILL.md`
+## Other modes
+
+- [setup.md](setup.md)
+- [construct.md](construct.md)
+- [signal-hunt.md](signal-hunt.md)
