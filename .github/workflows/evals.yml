@@ -1,0 +1,39 @@
+# Trigger evals: does the pack's one skill fire on realistic prompts?
+# Manual only. Calls the model, so it needs the ANTHROPIC_API_KEY secret;
+# without it the eval job is skipped. Not part of normal CI.
+name: Evals
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  key:
+    name: Check for API key
+    runs-on: ubuntu-latest
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - id: check
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$KEY" ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+
+  evals:
+    name: Run plugin evals
+    needs: key
+    if: needs.key.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install Claude Code
+        run: npm i -g @anthropic-ai/claude-code@2.1.289
+
+      - name: Run evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: claude plugin eval . --trust-plugin --runs 1 --no-publish --threshold 0.8

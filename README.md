@@ -6,6 +6,23 @@
 
 An ideal customer profile is who buys, drawn from a public signal and the words they use on a real day, not a costume persona.
 
+## In 60 seconds
+
+```text
+/plugin marketplace add cmj-hub/gtm-operator-skills
+/plugin install psp@gtm-operator-skills
+/psp:psp
+```
+
+Or score the sample without an agent:
+
+```bash
+python3 scripts/score_psp.py --file examples/good.json   # exit 0, prints the pain brief and "Next: /evp:evp"
+python3 scripts/score_psp.py --file examples/bad.json    # exit 1: - score 37/100 is under 70 → work through the axis lines below, lowest axis first
+```
+
+Part of the GTM operator suite — `/plugin install gtm@gtm-operator-skills` installs all ten.
+
 > Your ICP describes a costume. A Pain Signal Profile describes Tuesday at 11am.
 
 A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP.
@@ -24,13 +41,17 @@ The build guide teaches a human. The pack teaches an agent.
 
 ## What's in the pack
 
-| Skill | Job |
+One skill, `psp`, with modes. Type `/psp:psp` and a mode, or just ask.
+
+| Mode | Job |
 |---|---|
-| `psp` | Entry point. Loads your config, routes to the rest, scores drafts. `/psp` in Claude Code. |
-| `psp-kickoff` | Reads where you are and names the next step. Runs on a bare `/psp`. |
-| `psp-onboarding` | 15-minute setup: merges your ICP, PSP draft and signal sources into `brand-config.json` + `SOUL.md`. |
-| `psp-construct` | Builds one PSP, all five parts, then scores it. |
-| `psp-signal-hunt` | Lists 5-10 public signals worth watching for a segment, with source and cadence. |
+| `status` (no argument) | Reads where you are and names the next step. |
+| `setup` | 15-minute setup: merges your PSP draft and signal sources into `brand-config.json` + `SOUL.md`. Shared operator/ICP questions come from `/gtm:setup` once for the suite. |
+| `construct` | Builds one PSP, all five parts, saves it to `gtm/psp.md`, then scores it. |
+| `signal-hunt` | Lists 5-10 public signals worth watching for a segment, with source and cadence. |
+| `validate` | Scores a draft with `scripts/score_psp.py`. |
+
+Moved in 0.6: the sub-skills `psp-kickoff`, `psp-onboarding`, `psp-construct` and `psp-signal-hunt` are now the modes above (`/psp:psp status`, `setup`, `construct`, `signal-hunt`).
 
 `scripts/score_psp.py` exits 0 when a PSP is operational: 70 or more, the signal is no older than 30 days, and the pain uses one of the buyer's own phrases. A 95 built on a 45-day-old job post still exits 1. So does a persona table.
 
@@ -52,12 +73,7 @@ npx skills add cmj-hub/claude-psp --skill '*' -g --full-depth -y -a claude-code
 
 Swap `claude-code` for `cursor`, `codex`, `grok`, `github-copilot`, `windsurf`, `cline`, or `opencode`.
 
-### Claude Code only
-
-```text
-/plugin marketplace add cmj-hub/gtm-operator-skills
-/plugin install psp@gtm-operator-skills
-```
+Claude Code: see [In 60 seconds](#in-60-seconds).
 
 ## What you walk out with in 15 minutes
 
@@ -69,9 +85,9 @@ python3 scripts/score_psp.py --file examples/bad.json
 python3 scripts/score_psp.py --file examples/persona.json
 ```
 
-`examples/good.json` prints a pain brief: the pain sentence, and the buyer phrase inside it. `examples/persona.json` is a persona table. It exits 1: `persona has no pain in the buyer's language`.
+`examples/good.json` prints a pain brief: the pain sentence, and the buyer phrase inside it. `examples/persona.json` is a persona table. It exits 1: `persona has no pain in the buyer's language`. Every exit-1 reason prints as `- what is wrong → what to change`; add `--json` for one JSON object with `reasons`, `fixes` and `next`.
 
-It also reads the markdown doc `psp-construct` writes, and the draft inside your config:
+It also reads the markdown doc the `construct` mode writes (`gtm/psp.md`), and the draft inside your config:
 
 ```bash
 python3 scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
@@ -98,7 +114,7 @@ No. The Series-B sample is in `examples/`. Score it. Then swap in a signal from 
 
 ## Does this hunt signals for me?
 
-No. After the sample, `signal-hunt` names the *kinds* of public signals worth watching — job posts, funding, launches, hires. It does not log in. Closed-loop hunt on live accounts is out of scope here.
+No. After the sample, `/psp:psp signal-hunt` names the *kinds* of public signals worth watching — job posts, funding, launches, hires. It does not log in. Closed-loop hunt on live accounts is out of scope here.
 
 ## On the site
 
@@ -127,7 +143,7 @@ That one does ask for an email, and it enrols you in a short follow-up on the sa
 
 ## Privacy and security
 
-The scorer is stdlib Python and runs locally. No script opens a network connection. The skills may use WebFetch to read a public page, only when you ask for one. The pack writes `brand-config.json`, `SOUL.md` and `psp-<segment>.md` in your project root, and nothing else. No telemetry, no credentials, nothing sent or posted. See [SECURITY.md](SECURITY.md).
+The scorer is stdlib Python and runs locally. No script opens a network connection. The skills may use WebFetch to read a public page, only when you ask for one. The pack writes `brand-config.json` and `SOUL.md` in your project root and `gtm/psp.md`, and nothing else. No telemetry, no credentials, nothing sent or posted. See [SECURITY.md](SECURITY.md).
 
 ## License
 

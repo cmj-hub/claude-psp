@@ -4,13 +4,13 @@
 
 | File | Job | Owner |
 |---|---|---|
-| `psp/SKILL.md` | JMC FRAMEWORK (5-component PSP) | JMC (do not edit) |
+| `skills/psp/SKILL.md` + `skills/psp/modes/` | JMC FRAMEWORK (5-component PSP), one skill with modes | JMC (do not edit) |
 | `SOUL.md` | Operator's perspective on their buyer | You |
 | `brand-config.json` | ICP precision + PSP drafts + published `psp` block + signal sources | You (shared with every pack in the suite) |
 
 ## Rules
 
-1. **Always load brand-config.json + SOUL.md first.** Missing either → route to `psp-onboarding`.
+1. **Always load brand-config.json + SOUL.md first.** Missing either → run the `setup` mode (`skills/psp/modes/setup.md`).
 2. **Refuse abstract pain.** Force the 11am-Tuesday operational moment. If the operator says "they need better demand gen", push back.
 3. **No demographics as signals.** "VP of Marketing at Series B SaaS" is not a signal. Quote what they DID.
 4. **No fabricated signals.** If a candidate signal can't be sourced publicly, don't include it.
@@ -32,5 +32,11 @@
 
 ## Onboarding flow
 
-If both config files are missing on first invocation, route to
-`skills/psp-onboarding` (~15-minute guided setup).
+If both config files are missing on first invocation, run the `setup`
+mode, `skills/psp/modes/setup.md` (~15-minute guided setup). Shared
+`operator`/`icp` questions are asked once for the suite by `/gtm:setup`.
+
+## Work files
+
+The PSP doc goes to `gtm/psp.md` in the operator's project (create
+`gtm/` if missing). `brand-config.json` and `SOUL.md` stay at the root.

@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.6.0] — 2026-10-04
+
+One skill per pack. The four sub-skills are modes of `psp`, read on demand.
+
+### Moved
+- `psp/SKILL.md` → `skills/psp/SKILL.md`. `plugin.json` drops the `skills` key; default discovery loads it.
+- `psp-kickoff` → `/psp:psp status` (`skills/psp/modes/status.md`). Also runs on a bare `/psp:psp`.
+- `psp-onboarding` → `/psp:psp setup` (`skills/psp/modes/setup.md`). `onboarding` still routes there.
+- `psp-construct` → `/psp:psp construct` (`skills/psp/modes/construct.md`).
+- `psp-signal-hunt` → `/psp:psp signal-hunt` (`skills/psp/modes/signal-hunt.md`).
+- The PSP doc is saved to `gtm/psp.md` (was `psp-<segment-slug>.md` at the project root).
+
+### Changed
+- Always-on cost drops from ~828 to ~188 tokens: one skill description instead of five.
+- `argument-hint` lists the modes; `$ARGUMENTS` routes straight to one.
+- Setup asks the shared `operator`/`icp` questions only when they are empty, and points at `/gtm:setup` to ask them once for the suite.
+- Every successful run ends with `Next: /evp:evp`.
+- `score_psp.py`: `--json` (alias of `--format json`); exit-1 output lists every reason as `- what is wrong → what to change` and ends `Next: fix the lines above and run this again.`; exit 0 ends `Next: /evp:evp`. JSON gains `reasons`, `fixes` and `next`; existing keys are unchanged. `--help` shows an example.
+
+### Added
+- `evals/`: five trigger cases (four should fire `psp`, one evp near-miss should not). `.github/workflows/evals.yml` runs them on manual dispatch when `ANTHROPIC_API_KEY` is set.
+- README "In 60 seconds".
+- `tests/test_cli.py`.
+
 ## [0.5.0] — 2026-10-04
 
 Ports the buyer-language rule from `feat/buyer-language-pain-brief` onto current main. Supersedes PR #5.

@@ -10,6 +10,14 @@ USAGE:
     python3 score_psp.py --file brand-config.json --json-path psp_drafts.primary
     python3 score_psp.py --file brand-config.json --json-path psp   # published block
     python3 score_psp.py --stdin    # full PSP JSON on stdin
+    python3 score_psp.py --file examples/good.json --json   # one JSON object
+
+OUTPUT:
+    Text by default. On exit 1 every reason prints as
+    "- <what is wrong> → <what to change>", then
+    "Next: fix the lines above and run this again." On exit 0 the last
+    line names the next suite step (Next: /evp:evp). --json adds
+    "reasons", "fixes" (parallel lists) and "next" to the JSON object.
 
 EXIT CODES:
     0  operational: score >= 70, signal not older than 30 days, and the
@@ -185,6 +193,9 @@ class PSPScore:
     pain_brief: str = ""
     buyer_phrase: str = ""
     refusal: str = ""
+    reasons: List[str] = field(default_factory=list)
+    fixes: List[str] = field(default_factory=list)
+    next: str = ""
 
 
 def buyer_phrases(vocabulary: List[str]) -> List[str]:
@@ -268,7 +279,7 @@ def score_pain(p: str, vocabulary: List[str]) -> AxisScore:
         return AxisScore("pain", 0, 25, ["Empty pain"])
 
     # Count abstract / generic words
-    abstract_hits = [w for w in ABSTRACT_WORDS if re.search(rf"\b{re.escape(w)}\b", p, re.IGNORECASE)]
+    abstract_hits = [w for w in sorted(ABSTRACT_WORDS) if re.search(rf"\b{re.escape(w)}\b", p, re.IGNORECASE)]
     if abstract_hits:
         deduction = min(15, len(abstract_hits) * 5)
         score -= deduction
@@ -350,7 +361,7 @@ def score_vocabulary(v: List[str]) -> AxisScore:
     # Penalize abstract phrases
     abstract_hits = []
     for phrase in v:
-        for word in ABSTRACT_WORDS:
+        for word in sorted(ABSTRACT_WORDS):
             if re.search(rf"\b{re.escape(word)}\b", phrase, re.IGNORECASE):
                 abstract_hits.append(phrase)
                 break
@@ -412,6 +423,80 @@ def score_psp(psp: PSPInputs, *, persona: bool = False) -> PSPScore:
         buyer_phrase=phrase,
         refusal=refusal,
     )
+
+
+# ----------------------------------------------------------------------------
+# Fix lines: "<what is wrong> → <what to change>"
+# ----------------------------------------------------------------------------
+
+NEXT_STEP = "/evp:evp"
+RETRY = "fix the lines above and run this again."
+
+# Notes that are praise, not problems.
+GOOD_NOTE = re.compile(r"(— good$|^Timing trigger valid|^Uses \d+ vocabulary phrase)")
+
+# Notes that name a problem without saying what to change.
+NOTE_FIXES = {
+    "Empty signal": "quote one thing they did publicly in the last 30 days",
+    "Empty pain": "write the 11am-Tuesday moment in the buyer's words",
+    "Empty timing trigger": "set it to new-exec, budget-cycle or obvious-failure",
+    "Empty role": "name the role that feels the pain at 11am Tuesday",
+    "Empty vocabulary list": "add 4-8 phrases the buyer wrote or said",
+    "Pain doesn't use any vocabulary list phrases": "put one vocabulary phrase into the pain sentence",
+}
+
+# Notes whose text after the dash is a reason, not a change to make.
+PREFIX_FIXES = (
+    ("Phrases averaging <2 words", "use 2-5 word phrases lifted from their writing"),
+    ("Mentions a role but no action", "name what that person or company did, and when"),
+    ("Signal is ", "find a signal from the last 30 days"),
+    ("Pain is too terse", "add the operational detail: what breaks, for whom, this week"),
+)
+
+REFUSAL_FIXES = {
+    "persona has no pain in the buyer's language":
+        "replace the persona fields with signal, pain, timing_trigger, felt_pain_role and vocabulary; "
+        "write the pain with one of their phrases",
+    "pain is not in the buyer's language":
+        "put one of your vocabulary phrases (two or more concrete words) into the pain sentence",
+}
+
+
+def split_note(axis: str, note: str) -> tuple:
+    if note in NOTE_FIXES:
+        return f"{axis}: {note}", NOTE_FIXES[note]
+    what, sep, fix = note.partition(" — ")
+    for prefix, better in PREFIX_FIXES:
+        if note.startswith(prefix):
+            return f"{axis}: {what}", better
+    if sep:
+        return f"{axis}: {what}", fix
+    return f"{axis}: {note}", "rewrite this part and score again"
+
+
+def build_fixes(result: "PSPScore") -> None:
+    """Fill reasons/fixes (parallel) and next. Additive: other fields stay as they were."""
+    reasons, fixes = [], []
+    passed = result.operational and not result.refusal
+    if not passed:
+        if result.total < 70:
+            reasons.append(f"score {result.total}/{result.max_total} is under 70")
+            fixes.append("work through the axis lines below, lowest axis first")
+        if result.refusal:
+            reasons.append(result.refusal)
+            fixes.append(REFUSAL_FIXES.get(result.refusal, "rewrite the pain in the buyer's words"))
+        for axis in sorted(result.axes, key=lambda a: a.score - a.max_score):
+            for note in axis.notes:
+                if GOOD_NOTE.search(note) or "abstract ones don't count" in note:
+                    continue
+                what, fix = split_note(axis.name, note)
+                reasons.append(what)
+                fixes.append(fix)
+        if not reasons:
+            reasons.append(result.verdict)
+            fixes.append("re-hunt a fresh signal and score again")
+    result.reasons, result.fixes = reasons, fixes
+    result.next = NEXT_STEP if passed else RETRY
 
 
 # ----------------------------------------------------------------------------
@@ -507,15 +592,26 @@ def format_text(s: PSPScore) -> str:
             "",
             f"Buyer phrase: {s.buyer_phrase}",
         ])
+    if s.reasons:
+        lines.extend(["", "## What to fix"])
+        lines.extend(f"- {what} → {fix}" for what, fix in zip(s.reasons, s.fixes))
+    lines.extend(["", f"Next: {s.next}"])
     return "\n".join(lines)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Score a Pain Signal Profile 0-100. Exit 0 operational, 1 needs work, 2 bad input.",
+        epilog="example: python3 scripts/score_psp.py --file examples/good.json",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("--file", default=None, help="Path to PSP file (md or json)")
     parser.add_argument("--json-path", default=None, help="Dotted path in JSON to PSP block (e.g. psp_drafts.primary)")
     parser.add_argument("--stdin", action="store_true", help="Read PSP JSON from stdin")
-    parser.add_argument("--format", default="text", choices=["text", "json"])
+    parser.add_argument("--json", dest="format", action="store_const", const="json",
+                        help="Print one JSON object (same as --format json)")
+    parser.add_argument("--format", dest="format", default="text", choices=["text", "json"],
+                        help=argparse.SUPPRESS)
     args = parser.parse_args()
 
     persona = False
@@ -537,6 +633,7 @@ def main() -> int:
         return 2
 
     result = score_psp(psp, persona=persona)
+    build_fixes(result)
     if args.format == "json":
         print(json.dumps(asdict(result), indent=2))
     else:
