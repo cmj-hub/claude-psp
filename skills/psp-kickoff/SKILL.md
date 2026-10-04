@@ -1,9 +1,10 @@
 ---
 name: psp-kickoff
-description: Adaptive router for the PSP skill pack. Detects state (brand-config? SOUL.md? primary PSP drafted? secondary PSPs? vocabulary refreshed?) and picks the next-best step. Loaded by the main psp skill on bare invocation. Inspired by the coldoutboundskills kickoff pattern.
+description: "Adaptive router for the PSP pack. Detects state (brand-config, SOUL.md, primary PSP drafted and published, secondary PSPs, vocabulary freshness) and names the next step. Use when the operator runs a bare /psp, asks where to start, or asks for PSP status."
 user-invocable: false
 allowed-tools: Read Grep
 license: MIT
+models: ""
 
 ---
 
@@ -27,6 +28,7 @@ state = {
     "has_brand_config":    file_exists("brand-config.json"),
     "has_soul":            file_exists("SOUL.md"),
     "has_primary_psp":     brand_config.psp_drafts.primary and brand_config.psp_drafts.primary.pain != "",
+    "psp_published":      brand_config.psp and brand_config.psp.primary_pain != "",  # the block evp and the suite read
     "has_secondary_psp":   brand_config.psp_drafts.secondary is not None,
     "vocabulary_ok":       len(brand_config.psp_drafts.primary.vocabulary or []) >= 4,  # 4 to operate, 8+ target
     "signals_sourced":     any value true in brand_config.signal_sources,
@@ -38,10 +40,11 @@ state = {
 |---|---|
 | `!has_brand_config OR !has_soul` | `psp-onboarding` |
 | `has_config AND !has_primary_psp` | `psp-construct` (build primary PSP) |
+| `has_primary_psp AND !psp_published` | Score `psp_drafts.primary`; on exit 0 and a yes, publish the `psp` block (`psp-construct` Step 9). Downstream packs read `psp`, not the draft. |
 | `has_primary_psp AND !vocabulary_ok` | "Vocabulary list <4 phrases — let's mine more. Need help?" |
 | `vocabulary_ok AND !signals_sourced` | "Pick signal sources. Run `psp signal-hunt`." |
 | `signals_sourced AND psp_age_days > psp_refresh_days` (default 90) | "PSP last refreshed >90 days ago — re-run onboarding refresh" |
-| `signals_sourced AND psp_age_days <= psp_refresh_days` | "PSP is fresh + operational. Want to build a secondary PSP? Or push downstream into claude-evp + claude-cold-email?" |
+| `signals_sourced AND psp_age_days <= psp_refresh_days` | "PSP is fresh + operational. Want to build a secondary PSP? Or push downstream into `/evp:evp` + `/cold-email:cold-email`?" |
 
 ## Welcome flow
 
@@ -74,13 +77,14 @@ Step 1 takes ~15 minutes. Ready? (y/n)
 Brand config:        ✓ brand-config.json
 SOUL:                ✓ SOUL.md (3 stories)
 Primary PSP:         ✓ "Series-B SaaS pipeline-gap" (refreshed 12 days ago)
+Published psp:       ✓ psp block in brand-config.json (read by evp, cold-email, prospect-list)
 Vocabulary:          ✓ 8 phrases mined
 Signal sources:      ✓ LinkedIn + Crunchbase + 2 RSS feeds
 Secondary PSP:       ⬜ Not yet built
 
 Recommended next step:
 → Build secondary PSP for your next-priority segment, OR
-→ Push primary PSP into claude-evp (lock the EVP) + claude-cold-email (ship outreach)
+→ Push primary PSP into /evp:evp (lock the EVP) + /cold-email:cold-email (ship outreach)
 ```
 
 ## References

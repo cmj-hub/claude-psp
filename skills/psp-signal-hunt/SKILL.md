@@ -1,9 +1,10 @@
 ---
 name: psp-signal-hunt
-description: Surface 5-10 public, recent, verifiable signals worth hunting for a given ICP segment. Catalogs signal types (hiring, funding, leadership, product, pivot, content) and proposes operational sources + cadence to track each. Loaded by the main psp skill when the user wants to find what signals to hunt.
+description: "Surfaces 5-10 public, recent, verifiable signals worth hunting for one ICP segment, across hiring, funding, leadership, product, pivot and content, with a source and cadence to track each. Use when the main psp skill routes a request about which signals to hunt. Not for naming this week's accounts or contacts (use prospect-list)."
 user-invocable: false
 allowed-tools: Read WebFetch Grep
 license: MIT
+models: ""
 
 ---
 
@@ -100,5 +101,9 @@ not present a guess as a count.
 ### 5. Hand off
 
 Once signals are picked, hand to:
-- **claude-cold-email** → first-line opener uses Signal verbatim
-- **claude-psp psp-construct** → map each signal to a felt pain
+- **psp-construct** → map each signal to a felt pain
+- **prospect-list** (`/prospect-list:who-to-contact`) → who shows the signal this week
+- **cold-email** (`/cold-email:cold-email`) → first-line opener uses Signal verbatim
+
+If a companion pack is not installed, name its install line
+(`/plugin install <name>@gtm-operator-skills`); do not do its job here.

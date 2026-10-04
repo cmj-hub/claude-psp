@@ -6,7 +6,7 @@
 |---|---|---|
 | `psp/SKILL.md` | JMC FRAMEWORK (5-component PSP) | JMC (do not edit) |
 | `SOUL.md` | Operator's perspective on their buyer | You |
-| `brand-config.json` | ICP precision + PSP drafts + signal sources | You |
+| `brand-config.json` | ICP precision + PSP drafts + published `psp` block + signal sources | You (shared with every pack in the suite) |
 
 ## Rules
 
@@ -19,6 +19,8 @@
 7. **Felt-pain role ≠ buying authority.** Push the operator to name who FEELS the pain at 11am Tuesday.
 8. **Stale signals get flagged.** Signals >30 days old should not be in active outreach lists.
 9. **Score before you hand off.** Run `scripts/score_psp.py` on every PSP and show the operator each flag. Exit 1 (under 70, or a stale signal) means it isn't operational yet.
+10. **Merge, never overwrite.** `brand-config.json` and `SOUL.md` are shared by every pack in the suite. Read the existing file, add or update only this pack's fields (`psp_drafts`, `psp`, `signal_sources`, `research_cadence`), and leave every other key exactly as it was. Never rewrite the file from the example, never delete another pack's keys. Show the diff and ask before changing a field that already has a value. `operator` and `icp` are shared: fill gaps only. In `SOUL.md`, touch only this pack's own `## ` sections.
+11. **Publish the locked primary.** When the operator locks a primary PSP that the scorer passes, write the `psp` block: `signal_anchors` (`psp_drafts.primary.signal` first), `primary_pain`, `timing_trigger`, `felt_pain_role`, `vocabulary`. Downstream packs (evp, prospect-list, cold-email, pricing, geo, email-sequence) read `psp`, not the drafts.
 
 ## What the agent NEVER does
 
@@ -26,6 +28,7 @@
 - Invents vocabulary the operator hasn't sourced from real buyer writing
 - Uses generic LinkedIn-thought-leader voice
 - Substitutes the operator's category jargon back into their PSP
+- Rewrites `brand-config.json` or `SOUL.md` wholesale, or drops another pack's keys or sections
 
 ## Onboarding flow
 

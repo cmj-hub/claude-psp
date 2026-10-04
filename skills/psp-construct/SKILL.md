@@ -1,9 +1,10 @@
 ---
 name: psp-construct
-description: Step-by-step construction of a Pain Signal Profile for a specific ICP segment. Walks operator through the 5 components (signal, pain, timing, role, vocabulary), validates each, and produces a structured PSP doc. Loaded by the main psp skill when the user wants to build a PSP from scratch.
+description: "Step-by-step construction of a Pain Signal Profile for one ICP segment: walks the five components (signal, pain, timing, role, vocabulary), validates each, saves a PSP doc, scores it, and on the operator's say-so locks it as the primary PSP in brand-config.json. Use when the main psp skill routes a request to build or rebuild a PSP from scratch."
 user-invocable: false
-allowed-tools: Read Write Grep WebFetch
+allowed-tools: Read Write Grep WebFetch Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
 license: MIT
+models: ""
 
 ---
 
@@ -149,7 +150,7 @@ the file exists).
 Score the saved doc:
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/score_psp.py --file psp-<segment-slug>.md
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file psp-<segment-slug>.md
 ```
 
 Show the score and every flag. Exit 1 (under 70, or a signal older
@@ -165,6 +166,35 @@ block." Most common weak spots:
 - **Vocabulary borrowed from category**: pull more sources of their
   actual writing
 
-Once the operator accepts it, offer to write it back to
+### Step 9 — Write back to brand-config.json
+
+Once the operator accepts it, offer to save it to
 `brand-config.psp_drafts.primary` (or `secondary`) with today's date in
-`refreshed_at`.
+`refreshed_at`. `brand-config.json` is shared by every pack in the
+suite, so merge at the field level:
+
+- Read the existing file first. Add or update only `psp_drafts` and
+  `psp`; leave every other key exactly as it was. Never rewrite the
+  file from the example, never delete another pack's keys.
+- If a field already has a value, show the diff and ask before
+  changing it.
+- `operator` and `icp` are shared: fill gaps only.
+
+When the operator locks this PSP as the primary (exit 0 from the
+scorer, and they say yes), also publish the `psp` block that evp,
+prospect-list, cold-email and the rest of the suite read:
+
+```json
+"psp": {
+  "signal_anchors": ["<psp_drafts.primary.signal>", "<other top signals, optional>"],
+  "primary_pain": "<psp_drafts.primary.pain>",
+  "timing_trigger": "<psp_drafts.primary.timing_trigger>",
+  "felt_pain_role": "<psp_drafts.primary.felt_pain_role>",
+  "vocabulary": ["<psp_drafts.primary.vocabulary>"]
+}
+```
+
+`signal_anchors[0]` is always `psp_drafts.primary.signal`. Copy the
+values; do not reword them. A `secondary` PSP never touches `psp`.
+Then point at the next step: `/evp:evp` (or
+`/plugin install evp@gtm-operator-skills` if evp is not installed).

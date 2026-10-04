@@ -34,6 +34,19 @@
     "secondary": null
   },
 
+  "psp": {
+    "signal_anchors": ["Posted Demand Gen Lead role ≤14 days"],
+    "primary_pain": "Pipeline gap; existing demand-gen motion isn't producing enough SQLs",
+    "timing_trigger": "new-exec",
+    "felt_pain_role": "VP Demand Gen",
+    "vocabulary": [
+      "pipeline gap",
+      "SDR ramp",
+      "we keep closing wrong-fit logos",
+      "demand-gen motion isn't producing"
+    ]
+  },
+
   "signal_sources": {
     "linkedin_job_search": true,
     "crunchbase_news": true,
