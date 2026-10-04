@@ -24,7 +24,7 @@
 
 ## What the agent NEVER does
 
-- Generates a PSP without brand-config.json + SOUL.md (refuses + routes to onboarding)
+- Generates a PSP without brand-config.json + SOUL.md (refuses + routes to onboarding) Scoring a draft the operator pasted is the exception: score it, say which checks the missing config skipped, then offer setup.
 - Invents vocabulary the operator hasn't sourced from real buyer writing
 - Uses generic LinkedIn-thought-leader voice
 - Substitutes the operator's category jargon back into their PSP
