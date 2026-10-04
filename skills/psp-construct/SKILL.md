@@ -153,9 +153,11 @@ Score the saved doc:
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file psp-<segment-slug>.md
 ```
 
-Show the score and every flag. Exit 1 (under 70, or a signal older
-than 30 days) means the PSP is not operational yet — fix the flagged
-axes before handing off.
+Show the score and every flag. Exit 1 (under 70, a signal older
+than 30 days, or a pain that uses none of the buyer's vocabulary
+phrases) means the PSP is not operational yet — fix the flagged axes
+before handing off. The pain sentence has to contain one of their
+phrases; a passing run prints the pain brief and the phrase it used.
 
 Then ask: "Which of these are weakest? I can re-pull or refine any
 block." Most common weak spots:
@@ -196,5 +198,8 @@ prospect-list, cold-email and the rest of the suite read:
 
 `signal_anchors[0]` is always `psp_drafts.primary.signal`. Copy the
 values; do not reword them. A `secondary` PSP never touches `psp`.
+After writing it, score the published block with `--json-path psp`
+(`python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp`);
+it must exit 0 like the draft did.
 Then point at the next step: `/evp:evp` (or
 `/plugin install evp@gtm-operator-skills` if evp is not installed).
