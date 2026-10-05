@@ -23,6 +23,8 @@ python3 scripts/score_psp.py --file examples/bad.json    # exit 1: - score 37/10
 
 Part of the GTM operator suite — `/plugin install gtm@gtm-operator-skills` installs all ten.
 
+Add the [gtm-operator mod](https://github.com/cmj-hub/gtm-operator-claude-mod) to see the suite's next step above your prompt and keep `brand-config.json` from being overwritten: `/plugin install gtm-operator@gtm-operator-skills`.
+
 > Your ICP describes a costume. A Pain Signal Profile describes Tuesday at 11am.
 
 A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP.
