@@ -104,6 +104,12 @@ It will not hunt LinkedIn for you. It will not pick this quarter's PSP. It will 
 
 This pack drafts and scores. It will not pick this quarter's PSP, ingest your CRM, or update when Gmail changes the spam window. Those are judgement calls and live data. This pack gives you the instrument and the rubric; you bring the account.
 
+## The data step this pack leaves to you
+
+This pack scores the Pain Signal Profile. Building the company list that shows the signal is a separate job.
+
+Run [Build a company list](https://thegtmdirectory.com/jobs/build-a-company-list) on The GTM Directory — tools that pull companies matching your filters so you can swap the sample for your book.
+
 ## How is a Pain Signal Profile different from an ICP?
 
 An ICP names who they are — stage, title, headcount. A Pain Signal Profile names what they just did, what that does to their Tuesday, why it is acute now, who feels it, and the phrases they actually use.
