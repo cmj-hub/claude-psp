@@ -2,7 +2,7 @@
 name: psp
 description: "Builds and scores a Pain Signal Profile (PSP): a public, recent signal, the operational pain it implies, why it is acute now, who feels it, and the buyer's own words. Publishes the locked primary to brand-config.json for the rest of the suite. Use when the operator asks to build, score or refresh a PSP, map signals to pain, pick which signals to hunt, or check PSP status. Not for the value-proposition line (use evp), not for picking who to contact this week (use prospect-list), not for writing the email (use cold-email)."
 argument-hint: "[construct | signal-hunt | validate | status | setup]"
-allowed-tools: Read Write Grep WebFetch Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
+allowed-tools: Read Write(./gtm/**) Grep WebFetch Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
 license: MIT
 models: ""
 
