@@ -21,7 +21,7 @@ python3 scripts/score_psp.py --file examples/good.json   # exit 0, prints the pa
 python3 scripts/score_psp.py --file examples/bad.json    # exit 1: - score 37/100 is under 70 → work through the axis lines below, lowest axis first
 ```
 
-Part of the GTM operator suite — `/plugin install gtm@gtm-operator-skills` installs all ten.
+Part of the GTM operator suite: `/plugin install gtm@gtm-operator-skills` installs all ten.
 
 Add the [gtm-operator mod](https://github.com/cmj-hub/gtm-operator-claude-mod) to see the suite's next step above your prompt and keep `brand-config.json` from being overwritten: `/plugin install gtm-operator@gtm-operator-skills`.
 
@@ -38,7 +38,7 @@ We scored both samples in this repo. The costume scored **37**. The signal score
 The build guide teaches a human. The pack teaches an agent.
 
 <p align="center">
-  <img src="./assets/demo.gif" alt="Ideal customer profile skill — signal 100, costume 37" width="100%">
+  <img src="./assets/demo.gif" alt="Ideal customer profile skill: signal 100, costume 37" width="100%">
 </p>
 
 ## What's in the pack
@@ -60,7 +60,7 @@ Moved in 0.6: the sub-skills `psp-kickoff`, `psp-onboarding`, `psp-construct` an
 
 ## What this replaces
 
-A static ICP deck. A $15K positioning sprint's first week. The slide that says "our buyer is a VP" and then wonders why outbound is quiet.
+A static ICP deck. A positioning sprint's first week. The slide that says "our buyer is a VP" and then wonders why outbound is quiet.
 
 ## Install
 
@@ -109,11 +109,11 @@ This pack drafts and scores. It will not pick this quarter's PSP, ingest your CR
 
 This pack scores the Pain Signal Profile. Building the company list that shows the signal is a separate job.
 
-Run [Build a company list](https://thegtmdirectory.com/jobs/build-a-company-list) on The GTM Directory — tools that pull companies matching your filters so you can swap the sample for your book.
+Run [Build a company list](https://thegtmdirectory.com/jobs/build-a-company-list) on The GTM Directory: tools that pull companies matching your filters so you can swap the sample for your book.
 
 ## How is a Pain Signal Profile different from an ICP?
 
-An ICP names who they are — stage, title, headcount. A Pain Signal Profile names what they just did, what that does to their Tuesday, why it is acute now, who feels it, and the phrases they actually use.
+An ICP names who they are: stage, title, headcount. A Pain Signal Profile names what they just did, what that does to their Tuesday, why it is acute now, who feels it, and the phrases they actually use.
 
 State is not a signal. A job post four days ago is. If you cannot fill all five parts, you do not have a PSP yet.
 
@@ -123,27 +123,27 @@ No. The Series-B sample is in `examples/`. Score it. Then swap in a signal from 
 
 ## Does this hunt signals for me?
 
-No. After the sample, `/psp:psp signal-hunt` names the *kinds* of public signals worth watching — job posts, funding, launches, hires. It does not log in. Closed-loop hunt on live accounts is out of scope here.
+No. After the sample, `/psp:psp signal-hunt` names the *kinds* of public signals worth watching: job posts, funding, launches, hires. It does not log in. Closed-loop hunt on live accounts is out of scope here.
 
 ## On the site
 
-- [Pain Signal Profiles pack](https://jaymountconsulting.com/skills/claude-psp) — this pack's page
-- [Skill packs catalog](https://jaymountconsulting.com/skills) — install paths + every pack
-- [Course twin](https://jaymountconsulting.com/learn/courses/pain-signal-profiles) — human build guide for this pack
+- [Pain Signal Profiles pack](https://jaymountconsulting.com/skills/claude-psp): this pack's page
+- [Skill packs catalog](https://jaymountconsulting.com/skills): install paths + every pack
+- [Course twin](https://jaymountconsulting.com/learn/courses/pain-signal-profiles): human build guide for this pack
 
 ## Free, no signup
 
-- **[Pain Signal Profile Extractor](https://jaymountconsulting.com/tools/psp-extractor)** — the same job as this pack, hosted. No account, no key.
+- **[Pain Signal Profile Extractor](https://jaymountconsulting.com/tools/psp-extractor)**: the same job as this pack, hosted. No account, no key.
 - [Pain Signal Profiles framework](https://jaymountconsulting.com/frameworks/pain-signal-profiles)
 - [Pain Signal Playbook](https://jaymountconsulting.com/pain-signal-playbook)
 
 ## Free, by email
 
-[**Growth Audit**](https://jaymountconsulting.com/growth-audit) — where your go-to-market stack is leaking, sent to your inbox.
+[**Growth Audit**](https://jaymountconsulting.com/growth-audit): where your go-to-market stack is leaking, sent to your inbox.
 
 That one does ask for an email, and it enrols you in a short follow-up on the same topic. Unsubscribe whenever.
 
-[**The Friday Signal**](https://jaymountconsulting.com/newsletter/signal): free emails on building GTM systems that compound. No pitch in it. One click unsubscribes.
+[**The Friday Signal**](https://jaymountconsulting.com/newsletter/signal): free emails on building GTM systems. No pitch in it. One click unsubscribes.
 
 
 ## Next
@@ -160,4 +160,6 @@ MIT. See [LICENSE](./LICENSE).
 
 ## About
 
-Built by [Jay Mount Consulting](https://jaymountconsulting.com).
+All sample companies, people, results and figures in this repo are fictional.
+
+Built by [JMC Go-to-Market Systems](https://jaymountconsulting.com).

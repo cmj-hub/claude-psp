@@ -5,12 +5,12 @@ before you contribute.
 
 ## What kinds of contributions land
 
-- **Bug reports** — open an issue with a reproducible case. The
+- **Bug reports**: open an issue with a reproducible case. The
   scripts in `scripts/` are deterministic, so bugs there are usually
   one-line fixes.
 - **New modes** (`skills/psp/modes/<mode>.md`) that extend the existing framework. Discuss in
   an issue first if it's a substantial addition.
-- **Calibration improvements** to the scoring scripts — if you can
+- **Calibration improvements** to the scoring scripts: if you can
   show a case where the script scores wrong, that's gold.
 - **Cross-runtime fixes** (Cursor, Codex, Copilot and the other hosts
   in the README's Install section).
@@ -19,7 +19,7 @@ before you contribute.
 ## What doesn't land
 
 - Renaming the JMC framework concepts (Signal → Pain → EVP → Ask, the
-  5 Schwartz tiers, the 4 content pillars) — these are course-anchored.
+  5 Schwartz tiers, the 4 content pillars): these are course-anchored.
 - Adding LLM calls inside the skills. The whole point is that the
   skills are deterministic.
 - Adding paid-API dependencies to scripts. Scripts must work zero-dep.
@@ -38,7 +38,7 @@ cd <this-repo>
 For Python scripts:
 
 ```bash
-# All scripts are zero-dep Python 3.8+ — just run them
+# All scripts are zero-dep Python 3.8+: just run them
 python3 scripts/<script>.py --help
 ```
 
@@ -68,7 +68,7 @@ If `scripts/score_psp.py` scores something obviously wrong:
 The lexicons (`ABSTRACT_WORDS`, `SIGNAL_ACTION_PATTERNS`,
 `RECENCY_PATTERNS`, `FIRMOGRAPHIC_PATTERNS`) sit at the top of the
 script. Calibration fixes go there, with a test in `tests/` that pins
-the case — keep the deterministic path stable. `examples/good.json`
+the case: keep the deterministic path stable. `examples/good.json`
 must keep scoring 100 and `examples/bad.json` 37; the README quotes
 both numbers.
 
@@ -79,5 +79,5 @@ license already on this repo.
 
 ## About
 
-Built by [Jay Mount Consulting](https://jaymountconsulting.com).
-Part of the JMC public-build spine — see [/build](https://jaymountconsulting.com/build).
+Built by [JMC Go-to-Market Systems](https://jaymountconsulting.com).
+Part of the JMC public-build spine: see [/build](https://jaymountconsulting.com/build).
