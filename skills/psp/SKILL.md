@@ -78,7 +78,8 @@ refused with `pain is not in the buyer's language`. Both exit 1.
 ## The core stance
 
 A PSP is **not** an ICP, persona, or demographic. Those describe who
-the buyer **is**. A PSP describes:
+the buyer **is**. (The `icp` mode builds an ICP around a PSP, so its
+readiness test is a signal; it does not replace the PSP.) A PSP describes:
 
 1. What the buyer **just did** (signal — public, recent, verifiable)
 2. What that signal **implies** about their operational reality (pain)
