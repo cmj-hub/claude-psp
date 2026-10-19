@@ -50,6 +50,7 @@ One skill, `psp`, with modes. Type `/psp:psp` and a mode, or just ask.
 | `status` (no argument) | Reads where you are and names the next step. |
 | `setup` | 15-minute setup: merges your PSP draft and signal sources into `brand-config.json` + `SOUL.md`. Shared operator/ICP questions come from `/gtm:setup` once for the suite. |
 | `construct` | Builds one PSP, all five parts, saves it to `gtm/psp.md`, then scores it. |
+| `icp` | Writes an ideal customer profile around the PSP: who buys, the signals that show they are ready now, who to skip, each row marked fact or inference, applied to an example account. |
 | `signal-hunt` | Lists 5-10 public signals worth watching for a segment, with source and cadence. |
 | `validate` | Scores a draft with `scripts/score_psp.py`. |
 

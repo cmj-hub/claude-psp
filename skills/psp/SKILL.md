@@ -1,7 +1,7 @@
 ---
 name: psp
-description: "Builds and scores a Pain Signal Profile (PSP): a public, recent signal, the operational pain it implies, why it is acute now, who feels it, and the buyer's own words. Publishes the locked primary to brand-config.json for the rest of the suite. Use when the operator asks to build, score or refresh a PSP, map signals to pain, pick which signals to hunt, or check PSP status. Not for the value-proposition line (use evp), not for picking who to contact this week (use prospect-list), not for writing the email (use cold-email)."
-argument-hint: "[construct | signal-hunt | validate | status | setup]"
+description: "Builds and scores a Pain Signal Profile (PSP): a public, recent signal, the operational pain it implies, why it is acute now, who feels it, and the buyer's own words. Publishes the locked primary to brand-config.json for the rest of the suite. Also writes an ideal customer profile whose readiness test is a public pain signal. Use when the operator asks to build, score or refresh a PSP, for an ICP or buyer profile, to map signals to pain, pick which signals to hunt, or check PSP status. Not for the value-proposition line (use evp), not for picking who to contact this week (use prospect-list), not for writing the email (use cold-email)."
+argument-hint: "[construct | icp | signal-hunt | validate | status | setup]"
 allowed-tools: Read Write(./gtm/**) Grep WebFetch Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py:*)
 license: MIT
 models: ""
@@ -25,8 +25,10 @@ framework.
    `psp_drafts`, `psp`, `signal_sources`, `research_cadence`, and its
    own sections of [SOUL.md](../../SOUL.md).
 2. Either missing, or `operator`/`icp` empty → run the `setup` mode
-   first, whatever was asked (scoring a pasted PSP is the exception above). Do not draft a PSP without both files
-   (see `AGENTS.md`).
+   first, whatever was asked. Two exceptions: scoring a pasted PSP
+   (above), and a request that carries the seller facts itself (work
+   from those, then offer setup). Otherwise do not draft a PSP without
+   both files (see `AGENTS.md`).
 3. Route by `$ARGUMENTS`. If it names a mode, go straight to it. If it
    is empty, run `status`. Otherwise match the request to a row.
 4. Read the mode file with the Read tool and follow it.
@@ -36,6 +38,7 @@ framework.
 | (nothing), `status`, "where do I start", "PSP status" | [modes/status.md](modes/status.md) |
 | `setup`, `onboarding`, "set up", "refresh my config" | [modes/setup.md](modes/setup.md) |
 | `construct`, "build a PSP for…" | [modes/construct.md](modes/construct.md) |
+| `icp`, "ideal customer profile", "buyer profile", "who should we sell to" | [modes/icp.md](modes/icp.md) |
 | `signal-hunt`, "what signals should we hunt" | [modes/signal-hunt.md](modes/signal-hunt.md) |
 | `validate`, "score this PSP" | no file: run the scorer (below) |
 
@@ -75,7 +78,8 @@ refused with `pain is not in the buyer's language`. Both exit 1.
 ## The core stance
 
 A PSP is **not** an ICP, persona, or demographic. Those describe who
-the buyer **is**. A PSP describes:
+the buyer **is**. (The `icp` mode builds an ICP around a PSP, so its
+readiness test is a signal; it does not replace the PSP.) A PSP describes:
 
 1. What the buyer **just did** (signal — public, recent, verifiable)
 2. What that signal **implies** about their operational reality (pain)
@@ -84,6 +88,14 @@ the buyer **is**. A PSP describes:
 5. **What language** they use about it internally (vocabulary)
 
 If you can't fill in all five, you don't have a PSP yet.
+
+### Every finished doc
+
+A PSP or ICP is read by the operator's team. It carries no config file
+names, scorer notes or method rules dressed as facts (a recency window
+or trigger list is the operator's call, not a seller fact); every claim
+says whether it is a given fact or an inference; and it uses no pronoun
+for a named person unless the source gives one.
 
 ## The framework
 

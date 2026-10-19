@@ -158,5 +158,69 @@ class RecencyWindow(unittest.TestCase):
                 _code, result = score_dict(draft)
                 self.assertEqual(axis(result, "signal")["score"], 25, axis(result, "signal")["notes"])
 
+DOC = """# PSP: Mid-market contractors
+
+## Signal
+Posted an AP Specialist role on 2026-10-02 that says the team keys roughly 400 invoices a week by hand
+
+## Pain
+The controller spends close week on lien waiver chasing while invoices sit unkeyed
+
+## Timing
+**Trigger:** obvious-failure
+**Why now:** the job post says month-end close takes 12 business days
+
+## Role (felt-pain holder)
+Controller
+
+## Vocabulary
+- "lien waiver chasing"
+- "month-end close takes 12 business days"
+- "by hand"
+- "subcontractor invoices"
+"""
+
+
+def score_doc(text):
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "psp.md"
+        path.write_text(text, encoding="utf-8")
+        return score(["--file", str(path)])
+
+
+class DeliverableHygiene(unittest.TestCase):
+    """A finished doc carries no tool residue and guesses no pronouns."""
+
+    def test_clean_doc_passes(self):
+        code, result = score_doc(DOC)
+        self.assertEqual(code, 0, result)
+
+    def test_guessed_pronoun_refused(self):
+        code, result = score_doc(DOC.replace("The controller spends", "She spends"))
+        self.assertEqual(code, 1)
+        self.assertTrue(any(r.startswith("doc guesses a pronoun") for r in result["reasons"]), result)
+
+    def test_tool_residue_refused(self):
+        code, result = score_doc(DOC + "\nNo brand-config.json was given, so I ran the scorer by hand.\n")
+        self.assertEqual(code, 1)
+        self.assertTrue(any(r.startswith("doc names internal files or tools") for r in result["reasons"]), result)
+
+class DatedSignals(unittest.TestCase):
+    """A signal with its date counts as recent, and ages against --today."""
+
+    def test_iso_date_is_a_recency_anchor(self):
+        d = dict(GOOD, signal="Posted an AP Specialist role on 2026-10-02")
+        code, result = score(["--stdin", "--today", "2026-10-18"], stdin=json.dumps(d))
+        self.assertFalse(any("recency" in n for n in axis(result, "signal")["notes"]), result)
+        self.assertEqual(code, 0, result)
+
+    def test_old_date_is_stale(self):
+        d = dict(GOOD, signal="Posted an AP Specialist role on 2026-10-02")
+        code, result = score(["--stdin", "--today", "2026-12-01"], stdin=json.dumps(d))
+        self.assertEqual(code, 1)
+        self.assertIn("Stale", result["verdict"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
