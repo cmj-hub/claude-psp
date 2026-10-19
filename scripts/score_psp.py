@@ -34,6 +34,7 @@ NO LLM. NO network calls. Pure regex + feature engineering.
 from __future__ import annotations
 
 import argparse
+from datetime import date
 import json
 import re
 import sys
@@ -126,7 +127,10 @@ RECENCY_PATTERNS = [
     r"\b\d+\s+(days?|weeks?) ago\b",
     r"\bjust\b",
     r"\brecently\b",
+    r"\b\d{4}-\d{2}-\d{2}\b",
 ]
+ISO_DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+TODAY = date.today()
 
 TIMING_TRIGGERS = ["new-exec", "budget-cycle", "obvious-failure"]
 
@@ -161,6 +165,11 @@ def signal_age_days(s: str) -> Optional[int]:
     for m in AGE_PATTERN.finditer(s):
         n, unit = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
         ages.append(int(n) * UNIT_DAYS[unit[0].lower()])
+    for m in ISO_DATE_RE.finditer(s):
+        try:
+            ages.append((TODAY - date.fromisoformat(m.group(1))).days)
+        except ValueError:
+            continue
     return max(ages) if ages else None
 
 
@@ -255,7 +264,7 @@ def score_signal(s: str) -> AxisScore:
         notes.append("No action verb — signal should describe what they DID")
     if not has_recency:
         score -= 8
-        notes.append("No recency anchor — add ≤14d / ≤30d / 'just' / 'recently'")
+        notes.append("No recency anchor — add the date it happened (YYYY-MM-DD) or how many days ago")
 
     age = signal_age_days(s)
     if age is not None and age > STALE_AFTER_DAYS:
@@ -636,12 +645,20 @@ def main() -> int:
     parser.add_argument("--file", default=None, help="Path to PSP file (md or json)")
     parser.add_argument("--json-path", default=None, help="Dotted path in JSON to PSP block (e.g. psp_drafts.primary)")
     parser.add_argument("--stdin", action="store_true", help="Read PSP JSON from stdin")
+    parser.add_argument("--today", default=None, help="YYYY-MM-DD to age dated signals against (default: today)")
     parser.add_argument("--json", dest="format", action="store_const", const="json",
                         help="Print one JSON object (same as --format json)")
     parser.add_argument("--format", dest="format", default="text", choices=["text", "json"],
                         help=argparse.SUPPRESS)
     args = parser.parse_args()
 
+    global TODAY
+    if args.today:
+        try:
+            TODAY = date.fromisoformat(args.today)
+        except ValueError:
+            print("--today must be YYYY-MM-DD", file=sys.stderr)
+            return 2
     persona = False
     hygiene: List[tuple] = []
     if args.stdin:

@@ -205,6 +205,21 @@ class DeliverableHygiene(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertTrue(any(r.startswith("doc names internal files or tools") for r in result["reasons"]), result)
 
+class DatedSignals(unittest.TestCase):
+    """A signal with its date counts as recent, and ages against --today."""
+
+    def test_iso_date_is_a_recency_anchor(self):
+        d = dict(GOOD, signal="Posted an AP Specialist role on 2026-10-02")
+        code, result = score(["--stdin", "--today", "2026-10-18"], stdin=json.dumps(d))
+        self.assertFalse(any("recency" in n for n in axis(result, "signal")["notes"]), result)
+        self.assertEqual(code, 0, result)
+
+    def test_old_date_is_stale(self):
+        d = dict(GOOD, signal="Posted an AP Specialist role on 2026-10-02")
+        code, result = score(["--stdin", "--today", "2026-12-01"], stdin=json.dumps(d))
+        self.assertEqual(code, 1)
+        self.assertIn("Stale", result["verdict"])
+
 
 
 if __name__ == "__main__":

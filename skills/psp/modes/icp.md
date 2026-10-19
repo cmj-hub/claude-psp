@@ -60,7 +60,7 @@ Keep it to what a seller's team would act on: about 500 to 900 words, no preambl
 
 ## Score
 
-Save the pain-signal part (signal, pain, timing, role, vocabulary) as `gtm/psp.md` in the construct format and run:
+Save the account's pain signal (what it did and the date, the pain in its words, timing, role, vocabulary) as `gtm/psp.md` in the construct format and run (a dated signal ages against `--today`, default today):
 
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file gtm/psp.md
