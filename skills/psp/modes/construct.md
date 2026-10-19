@@ -141,6 +141,11 @@ Save it as `gtm/psp.md` in the operator's project (create `gtm/` if it
 is missing; ask first if the file exists — rename the old one to keep
 it).
 
+Before saving: no config file or scorer names in the doc, no pronoun
+for a named person unless the source gives it, and any recency window
+or trigger is stated as the operator's choice, not as a fact about the
+buyer.
+
 ### Step 8 — Score and stress test
 
 Score the saved doc:

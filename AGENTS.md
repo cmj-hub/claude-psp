@@ -10,7 +10,7 @@
 
 ## Rules
 
-1. **Always load brand-config.json + SOUL.md first.** Missing either → run the `setup` mode (`skills/psp/modes/setup.md`).
+1. **Always load brand-config.json + SOUL.md first.** Missing either → run the `setup` mode (`skills/psp/modes/setup.md`), unless the operator's request carries the seller facts itself: then work from those and offer setup afterward.
 2. **Refuse abstract pain.** Force the 11am-Tuesday operational moment. If the operator says "they need better demand gen", push back.
 3. **No demographics as signals.** "VP of Marketing at Series B SaaS" is not a signal. Quote what they DID.
 4. **No fabricated signals.** If a candidate signal can't be sourced publicly, don't include it.
@@ -24,7 +24,8 @@
 
 ## What the agent NEVER does
 
-- Generates a PSP without brand-config.json + SOUL.md (refuses + routes to onboarding) Scoring a draft the operator pasted is the exception: score it, say which checks the missing config skipped, then offer setup.
+- Generates a PSP without brand-config.json + SOUL.md or seller facts in the request (refuses + routes to onboarding). Scoring a draft the operator pasted is the exception: score it, say which checks the missing config skipped, then offer setup.
+- Prints method rules (recency windows, trigger lists) or tool names in a finished doc as if they were facts, or guesses a pronoun for a named person
 - Invents vocabulary the operator hasn't sourced from real buyer writing
 - Uses generic LinkedIn-thought-leader voice
 - Substitutes the operator's category jargon back into their PSP

@@ -23,7 +23,9 @@ EXIT CODES:
     0  operational: score >= 70, signal not older than 30 days, and the
        pain uses a phrase from the buyer's vocabulary (prints the pain brief)
     1  needs work: score < 70, a stale signal, a persona with no pain in the
-       buyer's language, or a pain that uses none of their phrases
+       buyer's language, or a pain that uses none of their phrases; for a
+       markdown doc, also a mention of config files or the scorer, or a
+       guessed he/she pronoun
     2  bad input (missing file, invalid JSON, wrong shape)
 
 NO LLM. NO network calls. Pure regex + feature engineering.
@@ -566,6 +568,32 @@ def parse_md(text: str) -> PSPInputs:
     return out
 
 
+# A finished doc is read by the buyer's team, not by this pack.
+TOOL_RESIDUE_RE = re.compile(
+    r"brand-config\.json|SOUL\.md|score_psp|\bthe scorer\b|\bPSP scorer\b|\$\{CLAUDE_",
+    re.IGNORECASE,
+)
+PRONOUN_RE = re.compile(r"\b(?:she|her|hers|herself|he|him|his|himself)\b", re.IGNORECASE)
+
+
+def doc_hygiene(text: str) -> List[tuple]:
+    """(reason, fix) pairs for a markdown deliverable: tool residue, guessed pronouns."""
+    issues = []
+    residue = sorted({m.group(0) for m in TOOL_RESIDUE_RE.finditer(text)})
+    if residue:
+        issues.append((
+            f"doc names internal files or tools: {', '.join(residue)}",
+            "cut every mention of config files, the scorer and the method; the reader only needs the profile",
+        ))
+    pronouns = sorted({m.group(0).lower() for m in PRONOUN_RE.finditer(text)})
+    if pronouns:
+        issues.append((
+            f"doc guesses a pronoun: {', '.join(pronouns)}",
+            "use the person's name, their role, or they, unless the source states their pronouns",
+        ))
+    return issues
+
+
 def load_from_md_file(path: str) -> PSPInputs:
     return parse_md(read_text(path))
 
@@ -615,6 +643,7 @@ def main() -> int:
     args = parser.parse_args()
 
     persona = False
+    hygiene: List[tuple] = []
     if args.stdin:
         leaf = parse_json(read_stdin_text())
         persona = persona_costume(leaf)
@@ -628,17 +657,22 @@ def main() -> int:
             text = read_text(args.file)
             persona = persona_markdown(text)
             psp = parse_md(text)
+            hygiene = doc_hygiene(text)
     else:
         print("Need --file or --stdin.", file=sys.stderr)
         return 2
 
     result = score_psp(psp, persona=persona)
     build_fixes(result)
+    for reason, fix in hygiene:
+        result.reasons.append(reason)
+        result.fixes.append(fix)
+        result.next = RETRY
     if args.format == "json":
         print(json.dumps(asdict(result), indent=2))
     else:
         print(format_text(result))
-    if result.refusal or not result.operational:
+    if result.refusal or not result.operational or hygiene:
         return 1
     return 0
 
