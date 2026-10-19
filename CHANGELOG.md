@@ -68,10 +68,8 @@ Suite pass. PSP is step 1 of the GTM operator suite.
 
 ## [0.3.0] — 2026-09-08
 
-Public magnet pass. Instrument stays public. First loop is 15 minutes.
-
 ### Added
-- Definition-first README (GEO paragraph, 15-minute artifact, FAQ H2s, current Pass price).
+- Definition-first README (GEO paragraph, 15-minute artifact, FAQ H2s).
 - Cross-agent installer: `npx skills add cmj-hub/claude-psp --all -g --full-depth` (Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, OpenCode, Antigravity, Goose, and the rest of the skills CLI list). Fallback copies into well-known `*/skills` dirs.
 - `package.json` (`jmc-psp`) so `npm install github:cmj-hub/claude-psp` and `npx jmc-psp` work. Not published to npmjs.com.
 - `examples/` golden good/bad pair for the first loop.
