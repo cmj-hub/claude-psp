@@ -78,6 +78,23 @@ Swap `claude-code` for `cursor`, `codex`, `grok`, `github-copilot`, `windsurf`, 
 
 Claude Code: see [In 60 seconds](#in-60-seconds).
 
+### From npm
+
+The same pack is on npm as [`@jmc-gtm/claude-psp`](https://www.npmjs.com/package/@jmc-gtm/claude-psp), released from this repo's version tags with npm provenance. It has no dependencies and no install scripts.
+
+In a project, for any agent host the skills installer knows (`experimental_sync` is still marked experimental there):
+
+```bash
+npm install -D @jmc-gtm/claude-psp
+npx skills experimental_sync -a claude-code -y
+```
+
+In your own Claude Code plugin marketplace, point an entry at the package:
+
+```json
+{ "name": "psp", "source": { "source": "npm", "package": "@jmc-gtm/claude-psp" } }
+```
+
 ## What you walk out with in 15 minutes
 
 Artifact: `examples/good.json` versus `examples/bad.json`.
