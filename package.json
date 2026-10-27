@@ -1,16 +1,34 @@
 {
-  "name": "jmc-psp",
+  "name": "@jmc-gtm/claude-psp",
   "version": "0.6.0",
-  "description": "A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP.",
+  "description": "A Pain Signal Profile is a five-part buying brief: a public signal, the operational pain it implies, why that pain is acute now, who feels it at 11am on Tuesday, and the exact phrases that person uses. It replaces a static ICP. Step 1 of the GTM operator suite.",
   "license": "MIT",
-  "bin": {
-    "jmc-psp": "./install.sh"
+  "author": "JMC Go-to-Market Systems",
+  "homepage": "https://github.com/cmj-hub/claude-psp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmj-hub/claude-psp.git"
   },
-  "scripts": {
-    "install-skills": "npx -y skills add cmj-hub/claude-psp --all -g --copy --full-depth",
-    "smoke": "bash scripts/smoke-test.sh"
+  "bugs": {
+    "url": "https://github.com/cmj-hub/claude-psp/issues"
   },
+  "keywords": [
+    "agent-skills",
+    "claude-code",
+    "claude-plugin",
+    "cursor",
+    "codex",
+    "grok",
+    "psp",
+    "icp",
+    "b2b",
+    "pain-signal-profile",
+    "buying-signals",
+    "outbound",
+    "gtm"
+  ],
   "files": [
+    ".claude-plugin",
     "skills",
     "scripts",
     "examples",
@@ -19,27 +37,14 @@
     "brand-config.example.json",
     "README.md",
     "LICENSE",
-    "install.sh"
+    "CHANGELOG.md",
+    "!scripts/install.sh",
+    "!scripts/install.ps1",
+    "!scripts/smoke-test.sh",
+    "!scripts/validate-skill-frontmatter.py"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cmj-hub/claude-psp.git"
-  },
-  "homepage": "https://jaymountconsulting.com/skills",
-  "bugs": {
-    "url": "https://github.com/cmj-hub/claude-psp/issues"
-  },
-  "keywords": [
-    "agent-skills",
-    "claude-code",
-    "cursor",
-    "codex",
-    "grok",
-    "psp",
-    "icp",
-    "b2b"
-  ],
-  "engines": {
-    "node": ">=18"
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
