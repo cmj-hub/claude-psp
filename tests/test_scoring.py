@@ -185,7 +185,7 @@ def score_doc(text):
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "psp.md"
         path.write_text(text, encoding="utf-8")
-        return score(["--file", str(path)])
+        return score(["--file", str(path), "--today", "2026-10-18"])
 
 
 class DeliverableHygiene(unittest.TestCase):
