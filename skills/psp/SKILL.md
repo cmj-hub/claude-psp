@@ -2,7 +2,7 @@
 name: psp
 description: "Builds and scores a Pain Signal Profile (PSP): a public, recent signal, the operational pain it implies, why it is acute now, who feels it, and the buyer's own words. Publishes the locked primary to brand-config.json for the rest of the suite. Also writes an ideal customer profile whose readiness test is a public pain signal. Use when the operator asks to build, score or refresh a PSP, for an ICP or buyer profile, to map signals to pain, pick which signals to hunt, or check PSP status. Not for the value-proposition line (use evp), not for picking who to contact this week (use prospect-list), not for writing the email (use cold-email)."
 argument-hint: "[construct | icp | signal-hunt | validate | status | setup]"
-allowed-tools: Read Write(./gtm/**) Grep WebFetch Bash(python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py":*)
+allowed-tools: Read Write(./gtm/**) Grep WebFetch Bash(python3 "${CLAUDE_PLUGIN_ROOT}/skills/psp/scripts/score_psp.py":*)
 license: MIT
 models: ""
 
@@ -58,11 +58,11 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py" --file brand-config.json --js
 python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py" --file brand-config.json --json-path psp   # published block
 ```
 
-`${CLAUDE_SKILL_DIR}` is this skill's own folder (the one holding this
-`SKILL.md`), for a plugin install and a plain-skills install alike; the
-scorer sits in its `scripts/`. The mode files write the scorer path the
-same way. On a host that does not fill in the variable, use the folder
-holding this `SKILL.md`. The scorer is stdlib Python — no network,
+This skill's folder is `${CLAUDE_SKILL_DIR}` (the folder holding this
+`SKILL.md`, for a plugin install and a plain-skills install alike); the
+scorer sits in its `scripts/`. The mode files write that folder as
+`<skill folder>`. On a host that does not fill in the variable, use the
+folder holding this `SKILL.md`. The scorer is stdlib Python — no network,
 no key. Add `--json` for one JSON object.
 
 Exit 0 means operational: 70+, the signal is ≤30 days old, and the

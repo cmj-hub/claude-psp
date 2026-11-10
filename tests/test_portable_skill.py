@@ -75,6 +75,12 @@ class PortableSkill(unittest.TestCase):
                     self.assertTrue(path.is_relative_to(self.installed), str(path))
                     self.assertTrue(path.exists(), str(path))
 
+    def test_mode_files_carry_no_unfilled_variables(self):
+        # Mode files are read as plain text, so a ${...} variable there is never filled in.
+        for doc in (self.installed / "modes").glob("*.md"):
+            with self.subTest(doc=doc.name):
+                self.assertNotIn("${", doc.read_text(encoding="utf-8"))
+
     def test_runtime_assets_are_real_files_in_artifact(self):
         for name in ("SOUL.md", "brand-config.example.json", "AGENTS.md", "scripts/score_psp.py"):
             with self.subTest(asset=name):

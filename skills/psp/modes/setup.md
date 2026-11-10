@@ -162,7 +162,7 @@ every pack in the suite. Merge at the field level:
 Then score the primary draft:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py" --file brand-config.json --json-path psp_drafts.primary
+python3 "<skill folder>/scripts/score_psp.py" --file brand-config.json --json-path psp_drafts.primary
 ```
 
 If it exits 0 and the operator locks it as the primary, publish the

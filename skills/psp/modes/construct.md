@@ -151,7 +151,7 @@ buyer.
 Score the saved doc:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py" --file gtm/psp.md
+python3 "<skill folder>/scripts/score_psp.py" --file gtm/psp.md
 ```
 
 Show the score and every fix line (`- what is wrong → what to change`). Exit 1 (under 70, a signal older
@@ -200,7 +200,7 @@ prospect-list, cold-email and the rest of the suite read:
 `signal_anchors[0]` is always `psp_drafts.primary.signal`. Copy the
 values; do not reword them. A `secondary` PSP never touches `psp`.
 After writing it, score the published block with `--json-path psp`
-(`python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py" --file brand-config.json --json-path psp`);
+(`python3 "<skill folder>/scripts/score_psp.py" --file brand-config.json --json-path psp`);
 it must exit 0 like the draft did.
 Then end with the next step, one line: `Next: /evp:evp` (or
 `/plugin install evp@gtm-operator-skills` if evp is not installed).
