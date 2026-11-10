@@ -63,7 +63,7 @@ Keep it to what a seller's team would act on: about 500 to 900 words, no preambl
 Save the account's pain signal (what it did and the date, the pain in its words, timing, role, vocabulary) as `gtm/psp.md` in the construct format and run (a dated signal ages against `--today`, default today):
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file gtm/psp.md
+python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py" --file gtm/psp.md
 ```
 
 On a markdown doc the scorer also refuses mentions of config files or the scorer, and a guessed he/she pronoun. Fix every line, score again, then show the profile. End with `Next: /evp:evp` only when working in the operator's project.

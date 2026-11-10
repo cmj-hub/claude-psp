@@ -156,13 +156,13 @@ every pack in the suite. Merge at the field level:
   value.
 - `operator` and `icp` are shared: fill gaps only.
 - `SOUL.md`: append or update only this pack's own `## ` sections (the
-  ones in the pack's [SOUL.md](../../../SOUL.md) template); never rewrite
+  ones in the pack's [SOUL.md](../SOUL.md) template); never rewrite
   another pack's section.
 
 Then score the primary draft:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score_psp.py --file brand-config.json --json-path psp_drafts.primary
+python3 "${CLAUDE_SKILL_DIR}/scripts/score_psp.py" --file brand-config.json --json-path psp_drafts.primary
 ```
 
 If it exits 0 and the operator locks it as the primary, publish the
@@ -214,9 +214,9 @@ Re-run: `/psp:psp setup`
 
 ## References
 
-- `brand-config.example.json` (pack root) — the shape of the shared file
-- [SOUL.md](../../../SOUL.md) — voice template
-- `AGENTS.md` (pack root) — behavior rules
+- [brand-config.example.json](../brand-config.example.json) — the shape of the shared file
+- [SOUL.md](../SOUL.md) — voice template
+- [AGENTS.md](../AGENTS.md) — behavior rules
 - Other modes:
   - [status.md](status.md) — adaptive router that uses these files
   - [construct.md](construct.md) — uses brand + SOUL for actual PSP build
